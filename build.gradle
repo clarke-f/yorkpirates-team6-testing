@@ -8,8 +8,8 @@ buildscript {
 		maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
 		maven { url 'https://s01.oss.sonatype.org/content/repositories/snapshots/' }
 	}
+	
 	dependencies {
-
 
 		// This follows advice from https://blog.gradle.org/log4j-vulnerability
 		constraints {

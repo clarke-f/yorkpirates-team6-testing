@@ -1,13 +1,13 @@
-package com.engteam14.yorkpirates.lwjgl3;
+package yorkpirates.desktop;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
-import com.engteam14.yorkpirates.YorkPirates;
+
+import yorkpirates.game.YorkPirates;
 
 /** Launches the desktop (LWJGL3) application. */
-public class Lwjgl3Launcher {
+public class DesktopLauncher {
+	
 	public static void main(String[] args) {
 		createApplication();
 	}

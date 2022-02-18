@@ -1,4 +1,4 @@
-package com.engteam14.yorkpirates;
+package yorkpirates.game;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
