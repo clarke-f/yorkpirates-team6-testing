@@ -1,5 +1,9 @@
 package yorkpirates.game;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
@@ -26,8 +30,8 @@ public class GameScreen extends ScreenAdapter {
     public ScoreManager loot;
 
     // Colleges
-    public Array<College> colleges;
-    public Array<Projectile> projectiles;
+    public Set<College> colleges;
+    public Set<Projectile> projectiles;
 
     // Sound
     public Music music;
@@ -97,7 +101,7 @@ public class GameScreen extends ScreenAdapter {
 
         // Initialise colleges
         College.capturedCount = 0;
-        colleges = new Array<>();
+        colleges = new HashSet<>();
         College newCollege;
         Array<Texture> collegeSprites = new Array<>();
 
@@ -137,7 +141,7 @@ public class GameScreen extends ScreenAdapter {
         colleges.add(new College(collegeSprites, 700, 525, 0.7f,"Home",playerTeam,player, "ship1.png"));
 
         // Initialise projectiles array to be used storing live projectiles
-        projectiles = new Array<>();
+        projectiles = new HashSet<>();
     }
 
     /**
@@ -161,8 +165,8 @@ public class GameScreen extends ScreenAdapter {
         tiledMapRenderer.render();
 
         // Draw Projectiles
-        for(int i = 0; i < projectiles.size; i++) {
-            projectiles.get(i).draw(game.batch, 0);
+        for (Projectile p : projectiles) {
+            p.draw(game.batch, 0);
         }
 
         // Draw Player, Player Health and Player Name
@@ -176,9 +180,10 @@ public class GameScreen extends ScreenAdapter {
         }
 
         // Draw Colleges
-        for(int i = 0; i < colleges.size; i++) {
-            colleges.get(i).draw(game.batch, 0);
+        for (College c : colleges) {
+            c.draw(game.batch, 0);
         }
+
         game.batch.end();
 
         // Draw HUD
@@ -193,15 +198,24 @@ public class GameScreen extends ScreenAdapter {
     /**
      * Is called once every frame. Used for game calculations that take place before rendering.
      */
-    private void update(){
+    private void update() {
+
         // Call updates for all relevant objects
         player.update(this, game.camera);
-        for(int i = 0; i < colleges.size; i++) {
-            colleges.get(i).update(this);
+        
+        Iterator<College> cIterator = colleges.iterator();
+
+        while (cIterator.hasNext()) {
+            College c = cIterator.next();
+            c.update(this);
         }
 
+        // for (College c : colleges) {
+        //     c.update(this);
+        // }
+
         // Check for projectile creation, then call projectile update
-        if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)){
+        if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)){
             Vector3 mouseVector = new Vector3(Gdx.input.getX(), Gdx.input.getY(),0);
             Vector3 mousePos = game.camera.unproject(mouseVector);
 
@@ -209,9 +223,20 @@ public class GameScreen extends ScreenAdapter {
             sprites.add(new Texture("tempProjectile.png"));
             projectiles.add(new Projectile(sprites, 0, player, mousePos.x, mousePos.y, playerTeam));
             gameHUD.endTutorial();
-        } for(int i = projectiles.size - 1; i >= 0; i--) {
-            projectiles.get(i).update(this);
+        } 
+        
+        Iterator<Projectile> pIterator = projectiles.iterator();
+
+        while (pIterator.hasNext()) {
+            Projectile p = pIterator.next();
+            if (p.update(this) == 0) {
+                pIterator.remove();
+            }
         }
+
+        // for (int i = projectiles.size - 1; i >= 0; i--) {
+        //     projectiles.get(i).update(this);
+        // }
 
         // Camera calculations based on player movement
         if(followPlayer) followPos = new Vector3(player.x, player.y, 0);

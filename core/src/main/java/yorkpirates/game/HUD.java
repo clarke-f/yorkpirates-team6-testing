@@ -186,10 +186,10 @@ public class HUD {
         }
 
         // Decide on and then display main player goal
-        if(College.capturedCount >= screen.colleges.size-1){
+        if(College.capturedCount >= screen.colleges.size() - 1){
             collegesTask.setText("Return home to win.");
         } else {
-            collegesTask.setText("Capture all colleges:  "+Math.min(College.capturedCount, screen.colleges.size-1)+"/"+(screen.colleges.size-1)+"  ");
+            collegesTask.setText("Capture all colleges:  " + Math.min(College.capturedCount, screen.colleges.size() - 1)+"/"+(screen.colleges.size() - 1) + "  ");
         }
 
         // Distance related task calculations

@@ -9,14 +9,8 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 
 public class GameObject {
-
-    public float x;
-    public float y;
-    public float width;
-    public float height;
-
+    public float x, y, width, height, currentHealth;
     public int maxHealth;
-    public float currentHealth;
 
     String team;
     Texture sprite;
