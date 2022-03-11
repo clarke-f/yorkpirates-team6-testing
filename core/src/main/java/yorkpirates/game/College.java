@@ -169,7 +169,7 @@ public class College extends GameObject {
      */
     @Override
     public void draw(SpriteBatch batch, float elapsedTime){
-        if(doBloodSplash)   batch.setShader(shader); // Set red shader to the batch
+        if(doBloodSplash)   batch.setShader(null); // Set red shader to the batch
         else                batch.setShader(null);
 
         // Draw college
