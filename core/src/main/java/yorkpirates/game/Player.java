@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 
 public class Player extends GameObject {
 
@@ -27,6 +28,7 @@ public class Player extends GameObject {
     private float splashTime;
     private long timeLastHit;
     private boolean doBloodSplash = false;
+    private Label weatherLabel;
 
     /**
      * Generates a generic object within the game with animated frame(s) and a hit-box.
@@ -38,11 +40,11 @@ public class Player extends GameObject {
      * @param height    The size of the object in the y-axis.
      * @param team      The team the player is on.
      */
-    public Player(Array<Texture> frames, float fps, float x, float y, float width, float height, String team){
+    public Player(Array<Texture> frames, float fps, float x, float y, float width, float height, String team,Label weatherLabel){
         super(frames, fps, x, y, width, height, team);
         lastMovementScore = 0;
         splashTime = 0;
-
+        this.weatherLabel = weatherLabel;
         // Generate health
         Array<Texture> sprites = new Array<>();
         sprites.add(new Texture("allyHealthBar.png"));
@@ -133,6 +135,12 @@ public class Player extends GameObject {
     public void move(float x, float y){
         this.x += x * Gdx.graphics.getDeltaTime();
         this.y += y * Gdx.graphics.getDeltaTime();
+        // weatherLabel.setText(this.x + " | " + this.y);
+        if(this.x >= 820 - 50 && this.x <= 820 + 50 && this.y >= 980 - 50 && this.y <= 980 + 50){
+            HUD.UpdateWeatherLabel("RAINING TODAY",weatherLabel);
+        }
+        
+
         playerHealth.move(this.x, this.y + height/2 + 2f); // Healthbar moves with player
     }
 

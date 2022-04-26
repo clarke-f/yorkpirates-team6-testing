@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 
 public class GameScreen extends ScreenAdapter {
     // Team name constants
@@ -63,6 +64,7 @@ public class GameScreen extends ScreenAdapter {
     public GameScreen(YorkPirates game){
         this.game = game;
         playerName = "Player";
+        
 
         // Initialise points and loot managers
         points = new ScoreManager();
@@ -74,7 +76,7 @@ public class GameScreen extends ScreenAdapter {
         HUDCam.setToOrtho(false, game.camera.viewportWidth, game.camera.viewportHeight);
         viewport = new FitViewport( Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), HUDCam);
         gameHUD =  new HUD(this);
-
+        Label l = HUD.AddWeatherLabel("");
         //initialise sound
         music = Gdx.audio.newMusic(Gdx.files.internal("Pirate1_Theme1.ogg"));
         music.setLooping(true);
@@ -86,7 +88,7 @@ public class GameScreen extends ScreenAdapter {
 
         // Initialise player
         sprites.add(new Texture("ship1.png"), new Texture("ship2.png"), new Texture("ship3.png"));
-        player = new Player(sprites, 2, 821, 489, 32, 16, playerTeam);
+        player = new Player(sprites, 2, 821, 489, 32, 16, playerTeam,l);
         sprites.clear();
         followPos = new Vector3(player.x, player.y, 0f);
         game.camera.position.lerp(new Vector3(760, 510, 0f), 1f);
