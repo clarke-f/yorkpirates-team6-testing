@@ -9,8 +9,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 
-import yorkpirates.Weather;
-import yorkpirates.WeatherType;
+import yorkpirates.game.Weather;
+import yorkpirates.game.WeatherType;
 
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 
@@ -19,6 +19,7 @@ public class Player extends GameObject {
     // Player constants
     public float SPEED = 70f;
     public float playerProjectileDamage = 20;
+    public float projectileShootCooldown = 0.1f;
     private static final int POINT_FREQUENCY = 1000; // How often the player gains points by moving.
     private static final float CAMERA_SLACK = 0.1f; // What percentage of the screen the player can move in before the camera follows.
      // Player movement speed.
@@ -144,11 +145,14 @@ public class Player extends GameObject {
         
         Weather weather = Weather.WhichWeather((int)this.x, (int)this.y, GameScreen.weathers);
         if(weather.weatherType == WeatherType.NONE){
+            //this is to test the position
             HUD.UpdateWeatherLabel(this.x + " | " + this.y,weatherLabel);
+            // HUD.UpdateWeatherLabel("",weatherLabel);
             weather.ResetPlayerDisadvantage(this);
         }else{
             //update weather label to show user which weather event they're in 
             HUD.UpdateWeatherLabel(weather.getWeatherLabelText(),weatherLabel);
+            weather.ResetPlayerDisadvantage(this);
             //need to disadvantage the player in some way
             weather.DisadvantagePlayer(this);
         }

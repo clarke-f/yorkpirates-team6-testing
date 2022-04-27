@@ -19,9 +19,10 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
-import yorkpirates.Weather;
-import yorkpirates.WeatherType;
+import yorkpirates.game.Weather;
+import yorkpirates.game.WeatherType;
 
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 
@@ -37,7 +38,7 @@ public class GameScreen extends ScreenAdapter {
     private static Weather snow =  new Weather(1190, 911, 100,100, WeatherType.SNOW);
     private static Weather storm =  new Weather(1700, 678, 100,100, WeatherType.STORM);
     private static Weather james =  new Weather(1380, 1770, 200,200, WeatherType.JAMESFURY);
-    public static final ArrayList<Weather> weathers = new ArrayList<Weather> (Arrays.asList(rain));
+    public static final ArrayList<Weather> weathers = new ArrayList<Weather> (Arrays.asList(rain,rain2,snow,storm,james));
 
     // Score managers
     public ScoreManager points;
@@ -58,6 +59,7 @@ public class GameScreen extends ScreenAdapter {
     private String playerName;
     private Vector3 followPos;
     private boolean followPlayer = false;
+    private boolean canFire = true;
 
     // UI & Camera
     private final HUD gameHUD;
@@ -74,7 +76,7 @@ public class GameScreen extends ScreenAdapter {
     private boolean isPaused = false;
     private float lastPause = 0;
 
-    public static ShapeRenderer shapeRenderer;
+    // public static ShapeRenderer shapeRenderer;
     
 
     /**
@@ -219,16 +221,27 @@ public class GameScreen extends ScreenAdapter {
         for(int i = 0; i < colleges.size; i++) {
             colleges.get(i).update(this);
         }
+        
+        
 
         // Check for projectile creation, then call projectile update
         if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)){
-            Vector3 mouseVector = new Vector3(Gdx.input.getX(), Gdx.input.getY(),0);
-            Vector3 mousePos = game.camera.unproject(mouseVector);
+            if(canFire){
+                Vector3 mouseVector = new Vector3(Gdx.input.getX(), Gdx.input.getY(),0);
+                Vector3 mousePos = game.camera.unproject(mouseVector);
 
-            Array<Texture> sprites = new Array<>();
-            sprites.add(new Texture("tempProjectile.png"));
-            projectiles.add(new Projectile(sprites, 0, player, mousePos.x, mousePos.y, playerTeam));
+                Array<Texture> sprites = new Array<>();
+                sprites.add(new Texture("tempProjectile.png"));
+                projectiles.add(new Projectile(sprites, 0, player, mousePos.x, mousePos.y, playerTeam));
+                canFire = false;
+                Thread thread = new Thread(){
+                    public void run(){
+                        fireRate(player);
+                    }
+                };
+                thread.start();
             gameHUD.endTutorial();
+            }
         } for(int i = projectiles.size - 1; i >= 0; i--) {
             projectiles.get(i).update(this);
         }
@@ -244,7 +257,14 @@ public class GameScreen extends ScreenAdapter {
             gamePause();
         }
     }
-
+    private void fireRate(Player player){
+        try{
+            Thread.sleep((int)(player.projectileShootCooldown * 1000));
+            canFire = true;
+        }catch(InterruptedException e){
+            Thread.currentThread().interrupt();
+        }
+    }
     /**
      * Called to switch from the current screen to the pause screen, while retaining the current screen's information.
      */

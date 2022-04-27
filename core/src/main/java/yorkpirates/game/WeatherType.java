@@ -1,4 +1,4 @@
-package yorkpirates;
+package yorkpirates.game;
 
 public enum WeatherType{
     RAIN,
