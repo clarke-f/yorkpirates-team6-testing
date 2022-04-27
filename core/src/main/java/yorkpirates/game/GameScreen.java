@@ -7,6 +7,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -15,12 +16,28 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import yorkpirates.Weather;
+import yorkpirates.WeatherType;
+
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 
 public class GameScreen extends ScreenAdapter {
     // Team name constants
     public static final String playerTeam = "PLAYER";
     public static final String enemyTeam = "ENEMY";
+
+
+    //weathers and positions
+    private static Weather rain =  new Weather(820, 980, 1000,100, WeatherType.RAIN);
+    private static Weather rain2 =  new Weather(1770, 2300, 150,150, WeatherType.RAIN);
+    private static Weather snow =  new Weather(1190, 911, 100,100, WeatherType.SNOW);
+    private static Weather storm =  new Weather(1700, 678, 100,100, WeatherType.STORM);
+    private static Weather james =  new Weather(1380, 1770, 200,200, WeatherType.JAMESFURY);
+    public static final ArrayList<Weather> weathers = new ArrayList<Weather> (Arrays.asList(rain));
 
     // Score managers
     public ScoreManager points;
@@ -57,6 +74,9 @@ public class GameScreen extends ScreenAdapter {
     private boolean isPaused = false;
     private float lastPause = 0;
 
+    public static ShapeRenderer shapeRenderer;
+    
+
     /**
      * Initialises the main game screen, as well as relevant entities and data.
      * @param game  Passes in the base game class for reference.
@@ -64,8 +84,6 @@ public class GameScreen extends ScreenAdapter {
     public GameScreen(YorkPirates game){
         this.game = game;
         playerName = "Player";
-        
-
         // Initialise points and loot managers
         points = new ScoreManager();
         loot = new ScoreManager();

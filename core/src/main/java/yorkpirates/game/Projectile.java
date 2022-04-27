@@ -5,6 +5,8 @@ import com.badlogic.gdx.utils.Array;
 
 import java.util.Objects;
 
+import javax.xml.namespace.QName;
+
 import static java.lang.Math.*;
 
 public class Projectile extends GameObject{
@@ -17,7 +19,7 @@ public class Projectile extends GameObject{
     private final float dy;
     private final float projectileSpeed; // Projectile movement speed.
 
-    private static final float projectileDamage = 20f; // Projectile damage.
+    private static float projectileDamage = 20f; // Projectile damage.
 
     /**
      * Generates a projectile object within the game with animated frame(s) and a hit-box.
@@ -31,7 +33,11 @@ public class Projectile extends GameObject{
     public Projectile(Array<Texture> frames, float fps, GameObject origin, float goal_x, float goal_y, String team) {
         super(frames, fps, origin.x, origin.y, 5f,5f,team);
         this.origin = origin;
-
+        if(origin instanceof Player){
+            Player p = (Player)origin;
+            projectileDamage = p.playerProjectileDamage;
+        }
+        
         // Speed calculations
         if(Objects.equals(team, GameScreen.playerTeam)){
             projectileSpeed = 150f;

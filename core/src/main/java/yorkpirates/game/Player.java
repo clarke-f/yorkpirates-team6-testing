@@ -8,14 +8,20 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
+
+import yorkpirates.Weather;
+import yorkpirates.WeatherType;
+
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 
 public class Player extends GameObject {
 
     // Player constants
+    public float SPEED = 70f;
+    public float playerProjectileDamage = 20;
     private static final int POINT_FREQUENCY = 1000; // How often the player gains points by moving.
     private static final float CAMERA_SLACK = 0.1f; // What percentage of the screen the player can move in before the camera follows.
-    private static final float SPEED =70f; // Player movement speed.
+     // Player movement speed.
     private static final int HEALTH = 200;
 
     // Movement calculation values
@@ -135,12 +141,19 @@ public class Player extends GameObject {
     public void move(float x, float y){
         this.x += x * Gdx.graphics.getDeltaTime();
         this.y += y * Gdx.graphics.getDeltaTime();
-        // weatherLabel.setText(this.x + " | " + this.y);
-        if(this.x >= 820 - 50 && this.x <= 820 + 50 && this.y >= 980 - 50 && this.y <= 980 + 50){
-            HUD.UpdateWeatherLabel("RAINING TODAY",weatherLabel);
+        
+        Weather weather = Weather.WhichWeather((int)this.x, (int)this.y, GameScreen.weathers);
+        if(weather.weatherType == WeatherType.NONE){
+            HUD.UpdateWeatherLabel(this.x + " | " + this.y,weatherLabel);
+            weather.ResetPlayerDisadvantage(this);
+        }else{
+            //update weather label to show user which weather event they're in 
+            HUD.UpdateWeatherLabel(weather.getWeatherLabelText(),weatherLabel);
+            //need to disadvantage the player in some way
+            weather.DisadvantagePlayer(this);
         }
         
-
+      
         playerHealth.move(this.x, this.y + height/2 + 2f); // Healthbar moves with player
     }
 
