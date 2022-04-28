@@ -2,8 +2,10 @@ package yorkpirates.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -16,18 +18,20 @@ import com.badlogic.gdx.utils.Scaling;
 public class HUD {
 
     // Stage
-    public Stage stage;
-
+    public static Stage stage;
+    public static int screenWidth = 0, screenHeight = 0;
     // Tutorial
     private final Table tutorial;
     private final Cell<Image> tutorialImg;
     private final Label tutorialLabel;
     private boolean tutorialComplete = false;
     private boolean canEndGame = false;
-
+    //skin for most objects
+    private static Skin skin;
     // Player counters
     private final Label score;
     private final Label loot;
+    
 
     // Player tasks
     private final Label tasksTitle;
@@ -49,9 +53,10 @@ public class HUD {
         // Generate skin
         TextureAtlas atlas;
         atlas = new TextureAtlas(Gdx.files.internal("Skin/YorkPiratesSkin.atlas"));
-        Skin skin = new Skin(Gdx.files.internal("Skin/YorkPiratesSkin.json"), new TextureAtlas(Gdx.files.internal("Skin/YorkPiratesSkin.atlas")));
+        skin = new Skin(Gdx.files.internal("Skin/YorkPiratesSkin.json"), new TextureAtlas(Gdx.files.internal("Skin/YorkPiratesSkin.atlas")));
         skin.addRegions(atlas);
-
+        screenWidth = Gdx.graphics.getWidth();
+        screenHeight = Gdx.graphics.getHeight();
         // Generate stage and table
         stage = new Stage(screen.getViewport());
         Gdx.input.setInputProcessor(stage);
@@ -143,10 +148,36 @@ public class HUD {
         table.add().expand();
         table.add(tracker);
 
-        // Add table to the stage
+        
         stage.addActor(table);
     }
+    public static Label AddWeatherLabel(String text){
+        // Add table to the stage
+        // Skin testSkin = new Skin();
+        Label testlbl = new Label(text,skin);
+        
+        // int labelWidth,labelHeight;
+       
+        // labelWidth = (int)glyphLayout.width;
+        // labelHeight = (int)testlbl.getHeight();
 
+        
+        // System.out.println(labelWidth + " | " + labelHeight);
+        // testlbl.setPosition(screenWidth /2 - labelWidth / 2, screenHeight / 2 - labelHeight/2);
+        stage.addActor(testlbl);
+        return testlbl;
+    }
+    public static void UpdateWeatherLabel(String text,Label l){
+        l.setText(text);
+       
+        GlyphLayout glyphLayout = new GlyphLayout();
+        glyphLayout.setText(skin.getFont("Raleway-Bold"), text);
+
+        int labelWidth = (int)glyphLayout.width;
+        int labelHeight = (int)glyphLayout.height;
+        // System.out.println(labelWidth + " | " + labelHeight);
+        l.setPosition(screenWidth /2 - labelWidth / 2, screenHeight / 2 - labelHeight /2);
+    }
     /**
      * Called to render the HUD elements
      * @param screen    The game screen which this is attached to.

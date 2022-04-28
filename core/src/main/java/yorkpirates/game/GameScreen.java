@@ -11,6 +11,7 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -20,10 +21,28 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
+
+import yorkpirates.game.Weather;
+import yorkpirates.game.WeatherType;
+
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+
 public class GameScreen extends ScreenAdapter {
     // Team name constants
     public static final String playerTeam = "PLAYER";
     public static final String enemyTeam = "ENEMY";
+
+
+    //weathers and positions
+    private static Weather rain =  new Weather(820, 980, 1000,100, WeatherType.RAIN);
+    private static Weather rain2 =  new Weather(1770, 2300, 150,150, WeatherType.RAIN);
+    private static Weather snow =  new Weather(1190, 911, 100,100, WeatherType.SNOW);
+    private static Weather storm =  new Weather(1700, 678, 100,100, WeatherType.STORM);
+    private static Weather james =  new Weather(1380, 1770, 200,200, WeatherType.JAMESFURY);
+    public static final ArrayList<Weather> weathers = new ArrayList<Weather> (Arrays.asList(rain,rain2,snow,storm,james));
 
     // Score managers
     public ScoreManager points;
@@ -44,6 +63,7 @@ public class GameScreen extends ScreenAdapter {
     private String playerName;
     private Vector3 followPos;
     private boolean followPlayer = false;
+    private boolean canFire = true;
 
     // UI & Camera
     private final HUD gameHUD;
@@ -60,6 +80,9 @@ public class GameScreen extends ScreenAdapter {
     private boolean isPaused = false;
     private float lastPause = 0;
 
+    // public static ShapeRenderer shapeRenderer;
+    
+
     /**
      * Initialises the main game screen, as well as relevant entities and data.
      * @param game  Passes in the base game class for reference.
@@ -67,7 +90,6 @@ public class GameScreen extends ScreenAdapter {
     public GameScreen(YorkPirates game){
         this.game = game;
         playerName = "Player";
-
         // Initialise points and loot managers
         points = new ScoreManager();
         loot = new ScoreManager();
@@ -78,7 +100,7 @@ public class GameScreen extends ScreenAdapter {
         HUDCam.setToOrtho(false, game.camera.viewportWidth, game.camera.viewportHeight);
         viewport = new FitViewport( Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), HUDCam);
         gameHUD =  new HUD(this);
-
+        Label l = HUD.AddWeatherLabel("");
         //initialise sound
         music = Gdx.audio.newMusic(Gdx.files.internal("Pirate1_Theme1.ogg"));
         music.setLooping(true);
@@ -90,7 +112,7 @@ public class GameScreen extends ScreenAdapter {
 
         // Initialise player
         sprites.add(new Texture("ship1.png"), new Texture("ship2.png"), new Texture("ship3.png"));
-        player = new Player(sprites, 2, 821, 489, 32, 16, playerTeam);
+        player = new Player(sprites, 2, 821, 489, 32, 16, playerTeam,l);
         sprites.clear();
         followPos = new Vector3(player.x, player.y, 0f);
         game.camera.position.lerp(new Vector3(760, 510, 0f), 1f);
@@ -209,6 +231,8 @@ public class GameScreen extends ScreenAdapter {
             College c = cIterator.next();
             c.update(this);
         }
+        
+        
 
         // for (College c : colleges) {
         //     c.update(this);
@@ -249,7 +273,14 @@ public class GameScreen extends ScreenAdapter {
             gamePause();
         }
     }
-
+    private void fireRate(Player player){
+        try{
+            Thread.sleep((int)(player.projectileShootCooldown * 1000));
+            canFire = true;
+        }catch(InterruptedException e){
+            Thread.currentThread().interrupt();
+        }
+    }
     /**
      * Called to switch from the current screen to the pause screen, while retaining the current screen's information.
      */
