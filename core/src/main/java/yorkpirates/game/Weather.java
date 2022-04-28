@@ -58,25 +58,7 @@ public class Weather {
   
     static Texture snow = new Texture(Gdx.files.internal("snow.png"));
 
-    // static Rectangle snow1 = new Rectangle(100, 100, 400, 400, snow);
-    // static Rectangle snow2 = new Rectangle(500, 300, 300, 300, snow);
-    // static Rectangle snow3 = new Rectangle(900, 900, 500, 500, snow);
-    // static Rectangle snow4 = new Rectangle(1500, 100, 400, 400, snow);
-    // static Rectangle snow5 = new Rectangle(1200, 1000, 50, 50,snow);
-    // static Rectangle snow6 = new Rectangle(1700, 300, 200, 200,  snow);
-    // static Rectangle snow7 = new Rectangle(1700, 400, 400, 400, snow);
-    // static Rectangle snow8 = new Rectangle(1400, 400, 400, 400, snow);
-    // static Rectangle snow9 = new Rectangle(1400, 400, 400, 400, snow);
-    // static Rectangle snow10 = new Rectangle(1400, 400, 400, 400, snow);
-    
-
-    
-    // static Rectangle rain2 = new Rectangle(700, 200, 200, 150, rain);
-    // static Rectangle rain3 = new Rectangle(200, 100, 400, 200, rain);
-    // static Rectangle rain4 = new Rectangle(1100, 900, 100, 100, rain);
-    // static Rectangle rain5 = new Rectangle(300, 1000, 50, 150, rain);
-    // static Rectangle rain6 = new Rectangle(1700, 700, 100, 100, rain);
-    // static Rectangle rain7 = new Rectangle(1000, 500, 150, 400, rain);
+  
 
     // static Rectangle stormback = new Rectangle(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), new Color(0, 0, 0, 0.6f));
     // static Rectangle storm1 = new Rectangle(300, 100, 100, 120, rain);

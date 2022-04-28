@@ -180,50 +180,50 @@ public class GameScreen extends ScreenAdapter {
     }
     private void generateRain(){
         Texture rain = new Texture(Gdx.files.internal("rain.png"));
-        int numOfDrops = (int)Math.floor(Math.random()*(8-6+1)+6);
+        // int numOfDrops = (int)Math.floor(Math.random()*(8-6+1)+6);
 
         //left
-        for(int i =0;i<6;i++){
-            int x = (int)Math.floor(Math.random()*(Gdx.graphics.getWidth()/2-0+1));
-            int y = (int)Math.floor(Math.random()*(Gdx.graphics.getHeight()-Gdx.graphics.getHeight()/4+1) + Gdx.graphics.getHeight()/4);
-            int size = (int)Math.floor(Math.random()*(400-50+1)+50);
+        for(int i =0;i<8;i++){
+            int x = (int)Math.floor(Math.random()*(((Gdx.graphics.getWidth()/2)+ 200) - ((Gdx.graphics.getWidth()/2)-200)+1) + (Gdx.graphics.getWidth()/2)-200);
+            int y = (int)Math.floor(Math.random()*(((Gdx.graphics.getHeight()/2)+200) - ((Gdx.graphics.getHeight()/2)-200)+1) + (Gdx.graphics.getHeight()/2)-200);
+            int size = (int)Math.floor(Math.random()*(80-40+1)+40);
 
-            Rain rrain = new Rain(x, y, size,size,rain);
+            Rain rrain = new Rain(x, y, size,size,rain,0.6f);
             rains.add(rrain);
         }
 
         //right
-        for(int i =0;i<6;i++){
-            int x = (int)Math.floor(Math.random()*(Gdx.graphics.getWidth()- Gdx.graphics.getWidth() /2+1) +Gdx.graphics.getWidth() /2);
-            int y = (int)Math.floor(Math.random()*(Gdx.graphics.getHeight()-Gdx.graphics.getHeight()/4+1) + Gdx.graphics.getHeight()/4);
-            int size = (int)Math.floor(Math.random()*(400-50+1)+50);
+        // for(int i =0;i<8;i++){
+        //     int x = (int)Math.floor(Math.random()*(Gdx.graphics.getWidth()- Gdx.graphics.getWidth() /2+1) +Gdx.graphics.getWidth() /2);
+        //     int y = (int)Math.floor(Math.random()*(Gdx.graphics.getHeight()-Gdx.graphics.getHeight()/4+1) + Gdx.graphics.getHeight()/4);
+        //     int size = (int)Math.floor(Math.random()*(100-50+1)+50);
 
-            Rain rrain = new Rain(x, y, size,size,rain);
-            rains.add(rrain);
-        }
+        //     Rain rrain = new Rain(x, y, size,size,rain,0.6f);
+        //     rains.add(rrain);
+        // }
     }
     private void generateSnow(){
         Texture snow = new Texture(Gdx.files.internal("snow.png"));
-        int numOfFlakes = (int)Math.floor(Math.random()*(8-6+1)+6);
+        // int numOfFlakes = (int)Math.floor(Math.random()*(8-6+1)+6);
         //left
-        for(int i =0;i<6;i++){
-            int x = (int)Math.floor(Math.random()*(Gdx.graphics.getWidth()/2-0+1));
-            int y = (int)Math.floor(Math.random()*(Gdx.graphics.getHeight()/2+1));
-            int size = (int)Math.floor(Math.random()*(400-50+1)+50);
+        for(int i =0;i<8;i++){
+            int x = (int)Math.floor(Math.random()*(((Gdx.graphics.getWidth()/2)+ 200) - ((Gdx.graphics.getWidth()/2)-200)+1) + (Gdx.graphics.getWidth()/2)-200);
+            int y = (int)Math.floor(Math.random()*(((Gdx.graphics.getHeight()/2)+200) - ((Gdx.graphics.getHeight()/2)-200)+1) + (Gdx.graphics.getHeight()/2)-200);
+            int size = (int)Math.floor(Math.random()*(80-40+1)+40);
 
-            Snow rsnow = new Snow(x, y, size,size,snow);
+            Snow rsnow = new Snow(x, y, size,size,snow,0.7f);
             snows.add(rsnow);
         }
 
         //right
-        for(int i =0;i<6;i++){
-            int x = (int)Math.floor(Math.random()*(Gdx.graphics.getWidth()- Gdx.graphics.getWidth() /2+1) +Gdx.graphics.getWidth() /2);
-            int y = (int)Math.floor(Math.random()*(Gdx.graphics.getHeight()/2+1));
-            int size = (int)Math.floor(Math.random()*(400-50+1)+50);
+        // for(int i =0;i<6;i++){
+        //     int x = (int)Math.floor(Math.random()*(Gdx.graphics.getWidth()- Gdx.graphics.getWidth() /2+1) +Gdx.graphics.getWidth() /2);
+        //     int y = (int)Math.floor(Math.random()*(Gdx.graphics.getHeight()+1));
+        //     int size = (int)Math.floor(Math.random()*(400-50+1)+50);
 
-            Snow rsnow = new Snow(x, y, size,size,snow);
-            snows.add(rsnow);
-        }
+        //     Snow rsnow = new Snow(x, y, size,size,snow,0.7f);
+        //     snows.add(rsnow);
+        // }
     }
 
     /**

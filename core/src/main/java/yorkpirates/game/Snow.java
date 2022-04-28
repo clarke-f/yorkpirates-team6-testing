@@ -10,19 +10,19 @@ import com.badlogic.gdx.graphics.Texture;
 public class Snow extends Rectangle{
     private Snow flake;
     private Boolean scaleUp = true;
-    public Snow(float x, float y, float width, float height, Texture texture){
-        super(x, y, width, height,texture);
+    public Snow(float x, float y, float width, float height, Texture texture,float alpha){
+        super(x, y, width, height,texture,alpha);
         flake = this;
        
         Timer t = new Timer();
         TimerTask tt = new TimerTask() {
             public void run(){
-                System.out.println(flake.getWidth());
+                // System.out.println(flake.getWidth());
                 
-                if(flake.getWidth() >= 600){
+                if(flake.getWidth() >= 200){
                     scaleUp = false;
                 }
-                if(flake.getWidth() <= 200){
+                if(flake.getWidth() <= 40){
                     scaleUp = true;
                 }
 
@@ -34,6 +34,6 @@ public class Snow extends Rectangle{
                 
             }
         };
-        t.scheduleAtFixedRate(tt, 1000, 200);
+        t.scheduleAtFixedRate(tt, 1000, 150);
     }
 }
