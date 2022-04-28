@@ -9,9 +9,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 
-import yorkpirates.game.Weather;
-import yorkpirates.game.WeatherType;
-
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 
 public class Player extends GameObject {
@@ -48,7 +45,7 @@ public class Player extends GameObject {
     public Player(Array<Texture> frames, float fps, float x, float y, float width, float height, String team,Label weatherLabel){
         super(frames, fps, x, y, width, height, team);
         lastMovementScore = 0;
-        
+        this.weatherLabel = weatherLabel;
         // Generate health
         Array<Texture> sprites = new Array<>();
         sprites.add(new Texture("allyHealthBar.png"));

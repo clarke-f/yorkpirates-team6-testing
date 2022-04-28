@@ -112,7 +112,6 @@ public class Weather {
             if(a instanceof Rectangle){
                 a.remove();
             }
-            System.out.println(a);
         }
     }
 }
