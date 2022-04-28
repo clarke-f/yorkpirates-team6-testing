@@ -10,6 +10,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -25,6 +26,8 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 
 public class GameScreen extends ScreenAdapter {
@@ -79,9 +82,10 @@ public class GameScreen extends ScreenAdapter {
     private boolean isPaused = false;
     private float lastPause = 0;
 
-    public static ArrayList<Rectangle> rains = new ArrayList<Rectangle>();
-    public static ArrayList<Rectangle> snows = new ArrayList<Rectangle>();
-
+    public static ArrayList<Actor> rains = new ArrayList<Actor>();
+    public static ArrayList<Actor> snows = new ArrayList<Actor>();
+    public static ArrayList<Actor> storms = new ArrayList<Actor>();
+    public static ArrayList<Actor> jamesa = new ArrayList<Actor>(Arrays.asList(new RectangleColour(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), new Color(255, 0, 0, 0.5f))));
     // public static ShapeRenderer shapeRenderer;
     
 
@@ -177,6 +181,7 @@ public class GameScreen extends ScreenAdapter {
 
         generateRain();
         generateSnow();
+        generateStorm();
     }
     private void generateRain(){
         Texture rain = new Texture(Gdx.files.internal("rain.png"));
@@ -191,16 +196,6 @@ public class GameScreen extends ScreenAdapter {
             Rain rrain = new Rain(x, y, size,size,rain,0.6f);
             rains.add(rrain);
         }
-
-        //right
-        // for(int i =0;i<8;i++){
-        //     int x = (int)Math.floor(Math.random()*(Gdx.graphics.getWidth()- Gdx.graphics.getWidth() /2+1) +Gdx.graphics.getWidth() /2);
-        //     int y = (int)Math.floor(Math.random()*(Gdx.graphics.getHeight()-Gdx.graphics.getHeight()/4+1) + Gdx.graphics.getHeight()/4);
-        //     int size = (int)Math.floor(Math.random()*(100-50+1)+50);
-
-        //     Rain rrain = new Rain(x, y, size,size,rain,0.6f);
-        //     rains.add(rrain);
-        // }
     }
     private void generateSnow(){
         Texture snow = new Texture(Gdx.files.internal("snow.png"));
@@ -214,16 +209,35 @@ public class GameScreen extends ScreenAdapter {
             Snow rsnow = new Snow(x, y, size,size,snow,0.7f);
             snows.add(rsnow);
         }
+    }
 
-        //right
-        // for(int i =0;i<6;i++){
-        //     int x = (int)Math.floor(Math.random()*(Gdx.graphics.getWidth()- Gdx.graphics.getWidth() /2+1) +Gdx.graphics.getWidth() /2);
-        //     int y = (int)Math.floor(Math.random()*(Gdx.graphics.getHeight()+1));
-        //     int size = (int)Math.floor(Math.random()*(400-50+1)+50);
+    private void generateStorm(){
+        Texture rain = new Texture(Gdx.files.internal("rain.png"));
+        Texture snow = new Texture(Gdx.files.internal("snow.png"));
+        for(int i =0;i<4;i++){
+            int x = (int)Math.floor(Math.random()*(((Gdx.graphics.getWidth()/2)+ 200) - ((Gdx.graphics.getWidth()/2)-200)+1) + (Gdx.graphics.getWidth()/2)-200);
+            int y = (int)Math.floor(Math.random()*(((Gdx.graphics.getHeight()/2)+200) - ((Gdx.graphics.getHeight()/2)-200)+1) + (Gdx.graphics.getHeight()/2)-200);
+            int size = (int)Math.floor(Math.random()*(80-40+1)+40);
 
-        //     Snow rsnow = new Snow(x, y, size,size,snow,0.7f);
-        //     snows.add(rsnow);
-        // }
+            Snow rsnow = new Snow(x, y, size,size,snow,0.7f);
+            storms.add(rsnow);
+        }
+        
+        for(int i =0;i<4;i++){
+            int x = (int)Math.floor(Math.random()*(((Gdx.graphics.getWidth()/2)+ 200) - ((Gdx.graphics.getWidth()/2)-200)+1) + (Gdx.graphics.getWidth()/2)-200);
+            int y = (int)Math.floor(Math.random()*(((Gdx.graphics.getHeight()/2)+200) - ((Gdx.graphics.getHeight()/2)-200)+1) + (Gdx.graphics.getHeight()/2)-200);
+            int size = (int)Math.floor(Math.random()*(80-40+1)+40);
+         
+            
+            Rain rrain = new Rain(x, y, size,size,rain,0.6f);
+            storms.add(rrain);
+            
+        }
+        // Texture stormt = new Texture(Gdx.files.internal("transparent.png"));
+        
+        RectangleColour stormback = new RectangleColour(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),new Color(0,0,0,0.7f));
+        storms.add(stormback);
+    
     }
 
     /**

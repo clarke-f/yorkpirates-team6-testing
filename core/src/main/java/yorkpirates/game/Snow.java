@@ -28,8 +28,10 @@ public class Snow extends Rectangle{
 
                 if(scaleUp == true){
                     flake.setSize(flake.getWidth() * 1.05f,flake.getHeight() * 1.05f);
+                    // flake.setPosition(flake.getX() * 1.05f,flake.getY() * 1.05f);
                 }else{
                     flake.setSize(flake.getWidth() * 0.95f,flake.getHeight() * 0.95f);
+                    // flake.setPosition(flake.getX() * 0.95f,flake.getY() * 0.95f);
                 }
                 
             }

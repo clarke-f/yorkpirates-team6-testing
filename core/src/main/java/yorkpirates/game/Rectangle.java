@@ -19,8 +19,6 @@ public class Rectangle extends Actor {
         setWidth(width);
         setHeight(height);
     }
-
- 
     
     @Override
     public void draw(Batch batch, float parentAlpha) {

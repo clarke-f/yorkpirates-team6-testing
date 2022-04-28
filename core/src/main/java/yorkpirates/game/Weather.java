@@ -36,7 +36,7 @@ public class Weather {
         }else if(weatherType == WeatherType.SNOW){
             ret = "";
         }else if(weatherType == WeatherType.STORM){
-            ret = "STORMY DAYS";
+            ret = "";
         }else if(weatherType == WeatherType.JAMESFURY){
             ret = "james is coming...";
         }else if(weatherType == WeatherType.NONE){
@@ -56,22 +56,19 @@ public class Weather {
    
     //will be easier to add lists later, just testing with these for now
   
-    static Texture snow = new Texture(Gdx.files.internal("snow.png"));
-
-  
-
+    
     // static Rectangle stormback = new Rectangle(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), new Color(0, 0, 0, 0.6f));
     // static Rectangle storm1 = new Rectangle(300, 100, 100, 120, rain);
     // static Rectangle storm2 = new Rectangle(780, 900, 110, 300, rain);
     
-    // static Rectangle james = new Rectangle(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), new Color(255, 0, 0, 0.5f));
+    // static RectangleColour james = new RectangleColour(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), new Color(255, 0, 0, 0.5f));
 
     // static Texture rain = 
     
     // static ArrayList<Rectangle> storm = new ArrayList<Rectangle>(Arrays.asList(stormback,storm1,storm2));
 
 
-    public static void DisadvantagePlayer(Player player, WeatherType weatherType,ArrayList<Rectangle> rains,ArrayList<Rectangle> snows ){
+    public static void DisadvantagePlayer(Player player, WeatherType weatherType,ArrayList<Actor> disList ){
         //set players attributes so they have a disadvantage
         //we also need to draw some rectangles to represent rain/snow so they're
         //visibility is impeded.
@@ -79,29 +76,25 @@ public class Weather {
         if(weatherType == WeatherType.RAIN){
             player.SPEED = 60f;
             //will make these lists later
-            for(Rectangle r : rains){
-                HUD.stage.addActor(r);
-            }
+            
         
         }else if (weatherType == WeatherType.SNOW){
             player.SPEED = 50f;
             player.projectileShootCooldown = 0.5f;
-            //will make these lists later
-            for(Rectangle r : snows){
-                HUD.stage.addActor(r);
-            }
+            
         }else if(weatherType == WeatherType.STORM){
             player.SPEED = 30f;
             player.projectileShootCooldown = 0.8f;
-            // for(Rectangle r : storm){
-            //     HUD.stage.addActor(r);
-            // }
+            
             
         }else if (weatherType == WeatherType.JAMESFURY){
             player.SPEED = 10f;
             player.playerProjectileDamage = 200f;
             player.projectileShootCooldown = 1f;
-            // HUD.stage.addActor(james);
+            
+        }
+        for(Actor r : disList){
+            HUD.stage.addActor(r);
         }
     }
     public static void ResetPlayerDisadvantage(Player player){
@@ -112,7 +105,7 @@ public class Weather {
         for(int i = actors.size-1; i> 0;i--){
             Actor a = actors.get(i);
             
-            if(a instanceof Rectangle){
+            if(a instanceof Rectangle || a instanceof RectangleColour){
                 a.remove();
             }
         }

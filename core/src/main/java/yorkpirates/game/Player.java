@@ -163,7 +163,15 @@ public class Player extends GameObject {
                 //update weather label to show user which weather event they're in 
                 HUD.UpdateWeatherLabel(Weather.getWeatherLabelText(type),weatherLabel);
                 //need to disadvantage the player in some way
-                Weather.DisadvantagePlayer(this,type,GameScreen.rains,GameScreen.snows);
+                if(type == WeatherType.RAIN){
+                    Weather.DisadvantagePlayer(this,type,GameScreen.rains);
+                }else if (type == WeatherType.SNOW){
+                    Weather.DisadvantagePlayer(this,type,GameScreen.snows);
+                }else if (type == WeatherType.STORM){
+                    Weather.DisadvantagePlayer(this,type,GameScreen.storms);
+                }else if(type == WeatherType.JAMESFURY){
+                    Weather.DisadvantagePlayer(this, type, GameScreen.jamesa);
+                }
             }
         }
         currentWeatherType = type;
