@@ -1,7 +1,5 @@
 package yorkpirates.game;
 
-import java.util.ArrayList;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -10,10 +8,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
-
-import yorkpirates.game.Weather;
-import yorkpirates.game.WeatherType;
-
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 
 public class Player extends GameObject {
@@ -99,6 +93,8 @@ public class Player extends GameObject {
                     }
                 }
             }
+        }else{
+            HUD.speedLbl.setText("0mph");
         }
         updateHitboxPos();
         // Track distance travelled
@@ -147,7 +143,7 @@ public class Player extends GameObject {
     public void move(float x, float y){
         this.x += x * Gdx.graphics.getDeltaTime();
         this.y += y * Gdx.graphics.getDeltaTime();
-
+        HUD.speedLbl.setText(SPEED + "mph");
         playerHealth.move(this.x, this.y + height/2 + 2f); // Healthbar moves with player
     }
     public void checkForWeather(){
@@ -167,7 +163,7 @@ public class Player extends GameObject {
                 //update weather label to show user which weather event they're in 
                 HUD.UpdateWeatherLabel(Weather.getWeatherLabelText(type),weatherLabel);
                 //need to disadvantage the player in some way
-                Weather.DisadvantagePlayer(this,type);
+                Weather.DisadvantagePlayer(this,type,GameScreen.rains,GameScreen.snows);
             }
         }
         currentWeatherType = type;

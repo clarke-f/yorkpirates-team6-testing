@@ -2,10 +2,11 @@ package yorkpirates.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -31,6 +32,7 @@ public class HUD {
     // Player counters
     private final Label score;
     private final Label loot;
+    public static Label speedLbl;
     
 
     // Player tasks
@@ -148,6 +150,11 @@ public class HUD {
         table.add().expand();
         table.add(tracker);
 
+        //spedometer
+        speedLbl = new Label("0mph", skin);
+        speedLbl .setPosition(Gdx.graphics.getWidth() - 300, Gdx.graphics.getHeight() - 100);
+        speedLbl.setFontScale(0.8f);
+        stage.addActor(speedLbl);
         
         stage.addActor(table);
     }
@@ -156,14 +163,6 @@ public class HUD {
         // Skin testSkin = new Skin();
         Label testlbl = new Label(text,skin);
         
-        // int labelWidth,labelHeight;
-       
-        // labelWidth = (int)glyphLayout.width;
-        // labelHeight = (int)testlbl.getHeight();
-
-        
-        // System.out.println(labelWidth + " | " + labelHeight);
-        // testlbl.setPosition(screenWidth /2 - labelWidth / 2, screenHeight / 2 - labelHeight/2);
         stage.addActor(testlbl);
         return testlbl;
     }

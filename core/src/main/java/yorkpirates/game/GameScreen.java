@@ -13,7 +13,6 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -26,11 +25,6 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
-
-import yorkpirates.game.Weather;
-import yorkpirates.game.WeatherType;
-
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 
 public class GameScreen extends ScreenAdapter {
@@ -84,6 +78,9 @@ public class GameScreen extends ScreenAdapter {
     private float elapsedTime = 0;
     private boolean isPaused = false;
     private float lastPause = 0;
+
+    public static ArrayList<Rectangle> rains = new ArrayList<Rectangle>();
+    public static ArrayList<Rectangle> snows = new ArrayList<Rectangle>();
 
     // public static ShapeRenderer shapeRenderer;
     
@@ -169,7 +166,7 @@ public class GameScreen extends ScreenAdapter {
 
         // Initialise projectiles array to be used storing live projectiles
         projectiles = new HashSet<>();
-
+        //check for weather
         Timer t = new Timer();
         TimerTask tt = new TimerTask() {
             public void run(){
@@ -177,6 +174,56 @@ public class GameScreen extends ScreenAdapter {
             }
         };
         t.scheduleAtFixedRate(tt, 500, 700);
+
+        generateRain();
+        generateSnow();
+    }
+    private void generateRain(){
+        Texture rain = new Texture(Gdx.files.internal("rain.png"));
+        int numOfDrops = (int)Math.floor(Math.random()*(8-6+1)+6);
+
+        //left
+        for(int i =0;i<6;i++){
+            int x = (int)Math.floor(Math.random()*(Gdx.graphics.getWidth()/2-0+1));
+            int y = (int)Math.floor(Math.random()*(Gdx.graphics.getHeight()-Gdx.graphics.getHeight()/4+1) + Gdx.graphics.getHeight()/4);
+            int size = (int)Math.floor(Math.random()*(400-50+1)+50);
+
+            Rain rrain = new Rain(x, y, size,size,rain);
+            rains.add(rrain);
+        }
+
+        //right
+        for(int i =0;i<6;i++){
+            int x = (int)Math.floor(Math.random()*(Gdx.graphics.getWidth()- Gdx.graphics.getWidth() /2+1) +Gdx.graphics.getWidth() /2);
+            int y = (int)Math.floor(Math.random()*(Gdx.graphics.getHeight()-Gdx.graphics.getHeight()/4+1) + Gdx.graphics.getHeight()/4);
+            int size = (int)Math.floor(Math.random()*(400-50+1)+50);
+
+            Rain rrain = new Rain(x, y, size,size,rain);
+            rains.add(rrain);
+        }
+    }
+    private void generateSnow(){
+        Texture snow = new Texture(Gdx.files.internal("snow.png"));
+        int numOfFlakes = (int)Math.floor(Math.random()*(8-6+1)+6);
+        //left
+        for(int i =0;i<6;i++){
+            int x = (int)Math.floor(Math.random()*(Gdx.graphics.getWidth()/2-0+1));
+            int y = (int)Math.floor(Math.random()*(Gdx.graphics.getHeight()/2+1));
+            int size = (int)Math.floor(Math.random()*(400-50+1)+50);
+
+            Snow rsnow = new Snow(x, y, size,size,snow);
+            snows.add(rsnow);
+        }
+
+        //right
+        for(int i =0;i<6;i++){
+            int x = (int)Math.floor(Math.random()*(Gdx.graphics.getWidth()- Gdx.graphics.getWidth() /2+1) +Gdx.graphics.getWidth() /2);
+            int y = (int)Math.floor(Math.random()*(Gdx.graphics.getHeight()/2+1));
+            int size = (int)Math.floor(Math.random()*(400-50+1)+50);
+
+            Snow rsnow = new Snow(x, y, size,size,snow);
+            snows.add(rsnow);
+        }
     }
 
     /**
@@ -253,13 +300,26 @@ public class GameScreen extends ScreenAdapter {
 
         // Check for projectile creation, then call projectile update
         if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)){
-            Vector3 mouseVector = new Vector3(Gdx.input.getX(), Gdx.input.getY(),0);
-            Vector3 mousePos = game.camera.unproject(mouseVector);
-
-            Array<Texture> sprites = new Array<>();
-            sprites.add(new Texture("tempProjectile.png"));
-            projectiles.add(new Projectile(sprites, 0, player, mousePos.x, mousePos.y, playerTeam));
-            gameHUD.endTutorial();
+            if(canFire){
+                Vector3 mouseVector = new Vector3(Gdx.input.getX(), Gdx.input.getY(),0);
+                Vector3 mousePos = game.camera.unproject(mouseVector);
+    
+                Array<Texture> sprites = new Array<>();
+                sprites.add(new Texture("tempProjectile.png"));
+                projectiles.add(new Projectile(sprites, 0, player, mousePos.x, mousePos.y, playerTeam));
+                gameHUD.endTutorial();
+                canFire = false;
+                Thread t = new Thread(){
+                    public void run(){
+                        try{
+                            Thread.sleep((int) (1000 * player.projectileShootCooldown));
+                        }catch(InterruptedException e){}
+                        canFire = true;
+                    }
+                };
+                t.start();
+            }
+           
         } 
         
         Iterator<Projectile> pIterator = projectiles.iterator();
@@ -284,14 +344,6 @@ public class GameScreen extends ScreenAdapter {
         // Call to pause the game
         if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) && elapsedTime - lastPause > 0.1f){
             gamePause();
-        }
-    }
-    private void fireRate(Player player){
-        try{
-            Thread.sleep((int)(player.projectileShootCooldown * 1000));
-            canFire = true;
-        }catch(InterruptedException e){
-            Thread.currentThread().interrupt();
         }
     }
     /**
