@@ -11,7 +11,6 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -23,10 +22,6 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
-
-import yorkpirates.game.Weather;
-import yorkpirates.game.WeatherType;
 
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 
@@ -63,7 +58,6 @@ public class GameScreen extends ScreenAdapter {
     private String playerName;
     private Vector3 followPos;
     private boolean followPlayer = false;
-    private boolean canFire = true;
 
     // UI & Camera
     private final HUD gameHUD;
@@ -273,14 +267,15 @@ public class GameScreen extends ScreenAdapter {
             gamePause();
         }
     }
-    private void fireRate(Player player){
-        try{
-            Thread.sleep((int)(player.projectileShootCooldown * 1000));
-            canFire = true;
-        }catch(InterruptedException e){
-            Thread.currentThread().interrupt();
-        }
-    }
+
+    // private void fireRate(Player player){
+    //     try{
+    //         Thread.sleep((int)(player.projectileShootCooldown * 1000));
+    //     }catch(InterruptedException e){
+    //         Thread.currentThread().interrupt();
+    //     }
+    // }
+
     /**
      * Called to switch from the current screen to the pause screen, while retaining the current screen's information.
      */

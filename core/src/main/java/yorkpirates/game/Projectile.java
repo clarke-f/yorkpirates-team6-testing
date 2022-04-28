@@ -5,8 +5,6 @@ import com.badlogic.gdx.utils.Array;
 
 import java.util.Objects;
 
-import javax.xml.namespace.QName;
-
 import static java.lang.Math.*;
 
 public class Projectile extends GameObject{
