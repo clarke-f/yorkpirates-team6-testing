@@ -1,5 +1,7 @@
 package yorkpirates.game;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -8,6 +10,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
+
+import yorkpirates.game.Weather;
+import yorkpirates.game.WeatherType;
 
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 
@@ -29,8 +34,13 @@ public class Player extends GameObject {
     private long lastMovementScore;
 
     private HealthBar playerHealth;
+    private float splashTime;
     private long timeLastHit;
+    private boolean doBloodSplash = false;
+
+    //weather
     private Label weatherLabel;
+    private WeatherType currentWeatherType= WeatherType.NONE;
 
     /**
      * Generates a generic object within the game with animated frame(s) and a hit-box.
@@ -45,6 +55,7 @@ public class Player extends GameObject {
     public Player(Array<Texture> frames, float fps, float x, float y, float width, float height, String team,Label weatherLabel){
         super(frames, fps, x, y, width, height, team);
         lastMovementScore = 0;
+        splashTime = 0;
         this.weatherLabel = weatherLabel;
         // Generate health
         Array<Texture> sprites = new Array<>();
@@ -97,14 +108,14 @@ public class Player extends GameObject {
         ProcessCamera(screen, camera);
 
         // Blood splash calculations
-        // if(doBloodSplash){
-        //     if(splashTime > 1){
-        //         doBloodSplash = false;
-        //         splashTime = 0;
-        //     }else{
-        //         splashTime += 1;
-        //     }
-        // }
+        if(doBloodSplash){
+            if(splashTime > 1){
+                doBloodSplash = false;
+                splashTime = 0;
+            }else{
+                splashTime += 1;
+            }
+        }
 
         if (TimeUtils.timeSinceMillis(timeLastHit) > 10000){
             currentHealth += 0.03;
@@ -136,25 +147,31 @@ public class Player extends GameObject {
     public void move(float x, float y){
         this.x += x * Gdx.graphics.getDeltaTime();
         this.y += y * Gdx.graphics.getDeltaTime();
-        
-        Weather weather = Weather.WhichWeather((int)this.x, (int)this.y, GameScreen.weathers);
-        if(weather.weatherType == WeatherType.NONE){
-            //this is to test the position
-            HUD.UpdateWeatherLabel(this.x + " | " + this.y,weatherLabel);
-            // HUD.UpdateWeatherLabel("",weatherLabel);
-            weather.ResetPlayerDisadvantage(this);
-        }else{
-            //update weather label to show user which weather event they're in 
-            HUD.UpdateWeatherLabel(weather.getWeatherLabelText(),weatherLabel);
-            weather.ResetPlayerDisadvantage(this);
-            //need to disadvantage the player in some way
-            weather.DisadvantagePlayer(this);
-        }
-        
-      
+
         playerHealth.move(this.x, this.y + height/2 + 2f); // Healthbar moves with player
     }
+    public void checkForWeather(){
+        // System.out.println("checking..");
 
+        WeatherType type = Weather.WhichWeather((int)this.x, (int)this.y, GameScreen.weathers);
+        //only check if its different weather
+        if(currentWeatherType != type){
+            Weather.ResetPlayerDisadvantage(this);
+            if(type == WeatherType.NONE){
+                //this is to test the position
+                // HUD.UpdateWeatherLabel(this.x + " | " + this.y,weatherLabel);
+                HUD.UpdateWeatherLabel("",weatherLabel);
+                
+            }else{
+                //update weather label to show user which weather event they're in 
+                HUD.UpdateWeatherLabel(Weather.getWeatherLabelText(type),weatherLabel);
+                //need to disadvantage the player in some way
+                Weather.DisadvantagePlayer(this,type);
+            }
+        }
+        currentWeatherType = type;
+    }
+    
     /**
      * Called when a projectile hits the college.
      * @param screen            The main game screen.
@@ -165,7 +182,7 @@ public class Player extends GameObject {
     public void takeDamage(GameScreen screen, float damage, String projectileTeam){
         timeLastHit = TimeUtils.millis();
         currentHealth -= damage;
-        // doBloodSplash = true;
+        doBloodSplash = true;
 
         // Health-bar reduction
         if(currentHealth > 0){
@@ -195,12 +212,9 @@ public class Player extends GameObject {
     public void draw(SpriteBatch batch, float elapsedTime){
         // Generates the sprite
         Texture frame = anim.getKeyFrame((currentHealth/maxHealth > 0.66f) ? 0 : ((currentHealth/maxHealth > 0.33f) ? 2 : 1), true);
-        
-        // if(doBloodSplash){
-        //     batch.setShader(null); // Set our grey-out shader to the batch
-        // } 
-        
-        float rotation = (float) Math.toDegrees(Math.atan2(previousDirectionY, previousDirectionX));
+        if(doBloodSplash){
+            // batch.setShader(shader); // Set our grey-out shader to the batch
+        } float rotation = (float) Math.toDegrees(Math.atan2(previousDirectionY, previousDirectionX));
 
         // Draws sprite and health-bar
         batch.draw(frame, x - width/2, y - height/2, width/2, height/2, width, height, 1f, 1f, rotation, 0, 0, frame.getWidth(), frame.getHeight(), false, false);

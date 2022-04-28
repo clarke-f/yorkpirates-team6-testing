@@ -3,6 +3,8 @@ package yorkpirates.game;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -19,6 +21,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
+
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import java.util.ArrayList;
@@ -164,6 +167,14 @@ public class GameScreen extends ScreenAdapter {
 
         // Initialise projectiles array to be used storing live projectiles
         projectiles = new HashSet<>();
+
+        Timer t = new Timer();
+        TimerTask tt = new TimerTask() {
+            public void run(){
+                player.checkForWeather();
+            }
+        };
+        t.scheduleAtFixedRate(tt, 500, 700);
     }
 
     /**
