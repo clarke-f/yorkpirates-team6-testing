@@ -154,12 +154,13 @@ public class Player extends GameObject {
         // System.out.println("checking..");
 
         WeatherType type = Weather.WhichWeather((int)this.x, (int)this.y, GameScreen.weathers);
+        // HUD.UpdateWeatherLabel(this.x + " | " + this.y,weatherLabel);
         //only check if its different weather
         if(currentWeatherType != type){
             Weather.ResetPlayerDisadvantage(this);
             if(type == WeatherType.NONE){
                 //this is to test the position
-                // HUD.UpdateWeatherLabel(this.x + " | " + this.y,weatherLabel);
+                
                 HUD.UpdateWeatherLabel("",weatherLabel);
                 
             }else{

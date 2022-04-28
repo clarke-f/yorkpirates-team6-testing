@@ -44,8 +44,10 @@ public class GameScreen extends ScreenAdapter {
     private static Weather rain2 =  new Weather(1770, 2300, 150,150, WeatherType.RAIN);
     private static Weather snow =  new Weather(1190, 911, 100,100, WeatherType.SNOW);
     private static Weather storm =  new Weather(1700, 678, 100,100, WeatherType.STORM);
+    private static Weather storm2 =  new Weather(670, 700, 150,150, WeatherType.STORM);
+    private static Weather storm3 =  new Weather(400,1000, 200,150, WeatherType.STORM);
     private static Weather james =  new Weather(1380, 1770, 200,200, WeatherType.JAMESFURY);
-    public static final ArrayList<Weather> weathers = new ArrayList<Weather> (Arrays.asList(rain,rain2,snow,storm,james));
+    public static final ArrayList<Weather> weathers = new ArrayList<Weather> (Arrays.asList(rain,rain2,snow,storm,james,storm2,storm3));
 
     // Score managers
     public ScoreManager points;
