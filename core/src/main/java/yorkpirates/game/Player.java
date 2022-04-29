@@ -132,7 +132,7 @@ public class Player extends GameObject {
                         takeDamage(screen, b.damage, "ENEMY");
                     }else{
                         int randMoney = (int)Math.floor(6 - 2 + 1) + 2;
-                        GameScreen.loot.Add(randMoney);
+                        screen.loot.Add(randMoney);
                     }
                     it.remove();
                 }else{

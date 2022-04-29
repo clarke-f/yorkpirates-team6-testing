@@ -3,7 +3,6 @@ package yorkpirates.game;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.Array;
 
-import yorkpirates.game.Obstacle;
 enum BarrelType{
     GOLD,
     BROWN

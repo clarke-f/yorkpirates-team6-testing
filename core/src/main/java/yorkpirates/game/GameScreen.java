@@ -50,7 +50,7 @@ public class GameScreen extends ScreenAdapter {
 
     // Score managers
     public ScoreManager points;
-    public static ScoreManager loot;
+    public ScoreManager loot;
 
     // Colleges
     public Set<College> colleges;

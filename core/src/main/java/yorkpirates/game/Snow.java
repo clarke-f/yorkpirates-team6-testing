@@ -3,7 +3,6 @@ package yorkpirates.game;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 
 
