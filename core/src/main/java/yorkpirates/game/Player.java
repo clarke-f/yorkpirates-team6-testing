@@ -1,5 +1,7 @@
 package yorkpirates.game;
 
+import java.util.Iterator;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -118,6 +120,28 @@ public class Player extends GameObject {
             if(currentHealth > maxHealth) currentHealth = maxHealth;
             playerHealth.resize(currentHealth);
         }
+
+        //collide with obstacle
+        for(Iterator<Obstacle> it = GameScreen.obstacles.iterator();it.hasNext();){
+            Obstacle o = it.next();
+            if(overlaps(o.hitBox)){
+                
+                if(o instanceof Barrel){
+                    Barrel b = (Barrel)o;
+                    if(b.type == BarrelType.BROWN){
+                        takeDamage(screen, b.damage, "ENEMY");
+                    }else{
+                        int randMoney = (int)Math.floor(6 - 2 + 1) + 2;
+                        GameScreen.loot.Add(randMoney);
+                    }
+                    it.remove();
+                }else{
+                    takeDamage(screen, o.damage, "ENEMY");
+                    move(-500, -500);
+                }
+            }
+        }
+        
     }
 
     /**
@@ -190,11 +214,9 @@ public class Player extends GameObject {
         doBloodSplash = true;
 
         // Health-bar reduction
-        if(currentHealth > 0){
-            playerHealth.resize(currentHealth);
-        }else{
-            playerHealth = null;
-            screen.gameEnd(false);
+        playerHealth.resize(currentHealth);
+        if(currentHealth <= 0){
+           screen.gameEnd(false);
         }
     }
 

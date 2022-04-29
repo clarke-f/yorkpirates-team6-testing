@@ -20,9 +20,12 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Null;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 import com.badlogic.gdx.utils.viewport.FitViewport;
+
+
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,7 +51,7 @@ public class GameScreen extends ScreenAdapter {
 
     // Score managers
     public ScoreManager points;
-    public ScoreManager loot;
+    public static ScoreManager loot;
 
     // Colleges
     public Set<College> colleges;
@@ -86,7 +89,9 @@ public class GameScreen extends ScreenAdapter {
     public static ArrayList<Actor> snows = new ArrayList<Actor>();
     public static ArrayList<Actor> storms = new ArrayList<Actor>();
     public static ArrayList<Actor> jamesa = new ArrayList<Actor>(Arrays.asList(new RectangleColour(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), new Color(255, 0, 0, 0.5f))));
-    // public static ShapeRenderer shapeRenderer;
+    
+    public static ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
+    // public static ArrayList<Obstacle> icebergs = new ArrayList<Obstacle>();
     
 
     /**
@@ -179,6 +184,45 @@ public class GameScreen extends ScreenAdapter {
         };
         t.scheduleAtFixedRate(tt, 500, 700);
 
+
+        //barrels
+        Array<Texture> barrel1 = new Array<Texture>();
+        barrel1.add(new Texture(Gdx.files.internal("barrel.png")));
+
+        Array<Texture> barrel2 = new Array<Texture>();
+        barrel2.add(new Texture(Gdx.files.internal("barrel_gold.png")));
+
+        //icebergs
+        Array<Texture> iceberg = new Array<Texture>();
+        iceberg.add(new Texture(Gdx.files.internal("iceberg.png")));
+        
+        //barrels 
+        Barrel b1 = new Barrel(barrel1, 0f, 821f, 608f, 20f, 20f, "ENEMY",40,BarrelType.BROWN);
+        Barrel b2 = new Barrel(barrel2, 0f,1086f, 787f, 20f, 20f, "ENEMY",0,BarrelType.GOLD);
+        Barrel b3 = new Barrel(barrel1, 0f,1299f, 605f, 20f, 20f, "ENEMY",40,BarrelType.BROWN);
+        Barrel b4 = new Barrel(barrel1, 0f,1619f, 524f, 20f, 20f, "ENEMY",40,BarrelType.BROWN);
+        Barrel b5 = new Barrel(barrel2, 0f,1936f, 801f, 20f, 20f, "ENEMY",0,BarrelType.GOLD);
+        Barrel b6 = new Barrel(barrel1, 0f,1700f, 1532f, 20f, 20f, "ENEMY",40,BarrelType.BROWN);
+        Barrel b7 = new Barrel(barrel1, 0f,546f, 1131f, 20f, 20f, "ENEMY",40,BarrelType.BROWN);
+        //icebergs
+        Obstacle ice1 = new Obstacle(iceberg,0, 950, 600, 50, 40, "ENEMY",100);
+        Obstacle ice2 = new Obstacle(iceberg,0, 1530, 500, 50, 40, "ENEMY",100);
+        Obstacle ice3 = new Obstacle(iceberg,0, 565, 1075, 50, 40, "ENEMY",100);
+        Obstacle ice4 = new Obstacle(iceberg,0, 1111, 1729, 50, 40, "ENEMY",100);
+        
+        obstacles.add(b1);
+        obstacles.add(b2);
+        obstacles.add(b3);
+        obstacles.add(b4);
+        obstacles.add(b5);
+        obstacles.add(b6);
+        obstacles.add(b7);
+        
+        obstacles.add(ice1);
+        obstacles.add(ice2);
+        obstacles.add(ice3);
+        obstacles.add(ice4);
+
         generateRain();
         generateSnow();
         generateStorm();
@@ -228,14 +272,13 @@ public class GameScreen extends ScreenAdapter {
             int y = (int)Math.floor(Math.random()*(((Gdx.graphics.getHeight()/2)+200) - ((Gdx.graphics.getHeight()/2)-200)+1) + (Gdx.graphics.getHeight()/2)-200);
             int size = (int)Math.floor(Math.random()*(80-40+1)+40);
          
-            
             Rain rrain = new Rain(x, y, size,size,rain,0.6f);
             storms.add(rrain);
             
         }
         // Texture stormt = new Texture(Gdx.files.internal("transparent.png"));
         
-        RectangleColour stormback = new RectangleColour(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),new Color(0,0,0,0.7f));
+        RectangleColour stormback = new RectangleColour(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),new Color(0,0,0,0.5f));
         storms.add(stormback);
     
     }
@@ -279,7 +322,10 @@ public class GameScreen extends ScreenAdapter {
         for (College c : colleges) {
             c.draw(game.batch, 0);
         }
-
+        for(Obstacle o : obstacles){
+            o.draw(game.batch, 0);
+        }
+        
         game.batch.end();
 
         // Draw HUD
