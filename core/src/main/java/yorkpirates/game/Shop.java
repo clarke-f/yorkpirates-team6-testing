@@ -29,6 +29,10 @@ public class Shop extends GameObject {
         changeImage(activatedSprite, 0); */
     }
 
+    public String getShopText(){
+        return ("Press e to open the shop");
+    }
+
     @Override
     public void draw(SpriteBatch batch, float elapsedTime){
         batch.draw(anim.getKeyFrame(elapsedTime, true), x-width/2, y-width/2, width, height);

@@ -31,6 +31,7 @@ public class GameScreen extends ScreenAdapter {
 
     // Shops
     public Array<Shop> shops;
+    public String openInfo;
 
     // Sound
     public Music music;
@@ -248,6 +249,12 @@ public class GameScreen extends ScreenAdapter {
         // Call to pause the game
         if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) && elapsedTime - lastPause > 0.1f){
             gamePause();
+        }
+        for(int i = 0; i < shops.size; i++){
+            if((shops.get(i).x - player.x) < (Gdx.graphics.getWidth()/15f) && (shops.get(i).y - player.y) < (Gdx.graphics.getHeight()/10f)){
+                openInfo = shops.get(i).getShopText();
+        }
+
         }
     }
 
