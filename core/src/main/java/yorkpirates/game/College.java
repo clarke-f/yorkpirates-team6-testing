@@ -11,6 +11,8 @@ import java.util.Objects;
 
 import static java.lang.Math.abs;
 
+import java.io.Console;
+
 public class College extends GameObject {
 
     public static int capturedCount = 0;
@@ -48,7 +50,7 @@ public class College extends GameObject {
         }
 
         splashTime = 0;
-        setMaxHealth(2000);
+        setMaxHealth(50);
         lastShotFired = 0;
         collegeName = name;
 
@@ -138,6 +140,12 @@ public class College extends GameObject {
                 screen.points.Add(pointsGained);
                 int lootGained = 15;
                 screen.loot.Add(lootGained);
+                
+                for (int i=0; i < screen.shops.size; i++){
+                    if(screen.shops.get(i).name == collegeName){
+                        screen.shops.get(i).activate(screen, i);
+                    }
+                }
 
                 Array<Texture> healthBarSprite = new Array<>();
                 Array<Texture> indicatorSprite = new Array<>();

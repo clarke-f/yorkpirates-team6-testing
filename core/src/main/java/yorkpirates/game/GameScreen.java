@@ -29,6 +29,9 @@ public class GameScreen extends ScreenAdapter {
     public Array<College> colleges;
     public Array<Projectile> projectiles;
 
+    // Shops
+    public Array<Shop> shops;
+
     // Sound
     public Music music;
 
@@ -104,7 +107,7 @@ public class GameScreen extends ScreenAdapter {
         // Add alcuin
         collegeSprites.add( new Texture("alcuin.png"),
                             new Texture("alcuin_2.png"));
-        newCollege = new College(collegeSprites, 1492, 665, 0.5f,"Alcuin", enemyTeam, player, "alcuin_boat.png");
+        newCollege = new College(collegeSprites, 1492, 672, 0.4f,"Alcuin", enemyTeam, player, "alcuin_boat.png");
         newCollege.addBoat(30, -20, -60);
         newCollege.addBoat(-50, -40, -150);
         newCollege.addBoat(-40, -70, 0);
@@ -138,6 +141,22 @@ public class GameScreen extends ScreenAdapter {
 
         // Initialise projectiles array to be used storing live projectiles
         projectiles = new Array<>();
+
+        // Initialise shops
+        Array<Texture> shopImages = new Array<>();
+        shops = new Array<>();
+        Shop newShop;
+
+        // alcuin
+        shopImages.add(new Texture("shop.png"));
+        newShop = new Shop(shopImages, 1510, 620, 0.35f, false, "Alcuin");
+        shops.add(newShop);
+        // derwent
+        newShop = new Shop(shopImages, 1750, 1955, 0.6f, false, "Derwent");
+        shops.add(newShop);
+        //langwith
+        newShop  = new Shop(shopImages, 1290, 1400, 0.8f, false, "Langwith");
+        shops.add(newShop);
     }
 
     /**
@@ -178,6 +197,13 @@ public class GameScreen extends ScreenAdapter {
         // Draw Colleges
         for(int i = 0; i < colleges.size; i++) {
             colleges.get(i).draw(game.batch, 0);
+        }
+
+        // Draw Shops
+        for (int i = 0; i < shops.size; i++){
+            if (shops.get(i).activated){
+                shops.get(i).draw(game.batch, 0);
+            }
         }
         game.batch.end();
 
