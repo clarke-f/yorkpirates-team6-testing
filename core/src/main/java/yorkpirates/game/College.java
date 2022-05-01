@@ -137,7 +137,7 @@ public class College extends GameObject {
                 // College taken over
                 int pointsGained = 50;
                 screen.points.Add(pointsGained);
-                int lootGained = 15;
+                int lootGained = 50;
                 screen.loot.Add(lootGained);
                 
                 for (int i=0; i < screen.shops.size; i++){

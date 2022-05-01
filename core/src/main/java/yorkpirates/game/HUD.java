@@ -26,6 +26,7 @@ public class HUD {
     private final Label tutorialLabel;
     private boolean tutorialComplete = false;
     private boolean canEndGame = false;
+    private static Label openShop;
 
     // Shop
     private final Table shop;
@@ -92,6 +93,10 @@ public class HUD {
         score = new Label(screen.points.GetString(), skin);
         loot.setFontScale(1.2f);
         score.setFontScale(1.2f);
+
+        openShop = new Label("", skin);
+        openShop.setBounds(0, 15, 16, 9);
+        stage.addActor(openShop);
 
         // Create task related actors
         tasksTitle = new Label(screen.getPlayerName() + "'s Tasks:", skin);
@@ -213,6 +218,13 @@ public class HUD {
         } else {
             // Tutorial complete
             tutorial.setVisible(false);
+        }
+        Player player = screen.getPlayer();
+        for(int i = 0; i < screen.shops.size; i++){
+            if((screen.shops.get(i).x - player.x) < (Gdx.graphics.getWidth()/15f) 
+            && (screen.shops.get(i).y - player.y) < (Gdx.graphics.getHeight()/10f)){
+                openShop.setText("Press e to open the shop");
+            }    
         }
 
         // Prompt the player to open the shop

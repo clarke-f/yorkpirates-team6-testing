@@ -37,7 +37,7 @@ public class Shop extends GameObject {
             // upgrade speed
         }
         if (upgradeSelected == "3"){
-            // upgrade health
+            // upgrade armour
         }
     }
 
