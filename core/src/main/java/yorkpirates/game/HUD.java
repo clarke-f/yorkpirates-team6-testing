@@ -236,6 +236,8 @@ public class HUD {
             else if(i == screen.shops.size-1){
                 //System.out.print("we are away from the shop");
                 openShop.setText("");
+                shop.setVisible(false);
+                screen.shopOpened = false;
             }
         }
         // Check if the player has opened or closed the shop
