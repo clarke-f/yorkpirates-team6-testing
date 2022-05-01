@@ -358,7 +358,7 @@ public class GameScreen extends ScreenAdapter {
         // }
 
         // Check for projectile creation, then call projectile update
-        if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)){
+        /* if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)){
             if(canFire){
                 Vector3 mouseVector = new Vector3(Gdx.input.getX(), Gdx.input.getY(),0);
                 Vector3 mousePos = game.camera.unproject(mouseVector);
@@ -379,8 +379,80 @@ public class GameScreen extends ScreenAdapter {
                 t.start();
             }
            
-        } 
+        } */
+        if(Gdx.input.isKeyJustPressed(Input.Keys.LEFT)){
+            if(canFire){
+                Array<Texture> sprites = new Array<>();
+                sprites.add(new Texture("tempProjectile.png"));
+                projectiles.add(new Projectile(sprites, 0, player, 0, player.y, playerTeam));
+                gameHUD.endTutorial();
+                canFire = false;
+                Thread t = new Thread(){
+                    public void run(){
+                        try{
+                            Thread.sleep((int) (1000 * player.projectileShootCooldown));
+                        }catch(InterruptedException e){}
+                        canFire = true;
+                    }
+                };
+                t.start();
+            }
+        }
         
+        if(Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)){
+            if(canFire){
+                Array<Texture> sprites = new Array<>();
+                sprites.add(new Texture("tempProjectile.png"));
+                projectiles.add(new Projectile(sprites, 0, player, Gdx.graphics.getWidth(), player.y, playerTeam));
+                gameHUD.endTutorial();
+                canFire = false;
+                Thread t = new Thread(){
+                    public void run(){
+                        try{
+                            Thread.sleep((int) (1000 * player.projectileShootCooldown));
+                        }catch(InterruptedException e){}
+                        canFire = true;
+                    }
+                };
+                t.start();
+            }
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.UP)){
+            if(canFire){
+                Array<Texture> sprites = new Array<>();
+                sprites.add(new Texture("tempProjectile.png"));
+                projectiles.add(new Projectile(sprites, 0, player, player.x, Gdx.graphics.getHeight(), playerTeam));
+                gameHUD.endTutorial();
+                canFire = false;
+                Thread t = new Thread(){
+                    public void run(){
+                        try{
+                            Thread.sleep((int) (1000 * player.projectileShootCooldown));
+                        }catch(InterruptedException e){}
+                        canFire = true;
+                    }
+                };
+                t.start();
+            }
+        }
+        if(Gdx.input.isKeyJustPressed(Input.Keys.DOWN)){
+            if(canFire){
+                Array<Texture> sprites = new Array<>();
+                sprites.add(new Texture("tempProjectile.png"));
+                projectiles.add(new Projectile(sprites, 0, player, player.x, 0, playerTeam));
+                gameHUD.endTutorial();
+                canFire = false;
+                Thread t = new Thread(){
+                    public void run(){
+                        try{
+                            Thread.sleep((int) (1000 * player.projectileShootCooldown));
+                        }catch(InterruptedException e){}
+                        canFire = true;
+                    }
+                };
+                t.start();
+            }
+        }
         Iterator<Projectile> pIterator = projectiles.iterator();
 
         while (pIterator.hasNext()) {
