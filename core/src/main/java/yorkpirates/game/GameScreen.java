@@ -157,10 +157,10 @@ public class GameScreen extends ScreenAdapter {
         newShop = new Shop(shopImages, 1510, 620, 0.35f, false, "Alcuin");
         shops.add(newShop);
         // derwent
-        newShop = new Shop(shopImages, 1750, 1955, 0.6f, false, "Derwent");
+        newShop = new Shop(shopImages, 1790, 1999, 0.58f, false, "Derwent");
         shops.add(newShop);
         //langwith
-        newShop  = new Shop(shopImages, 1290, 1400, 0.8f, false, "Langwith");
+        newShop  = new Shop(shopImages, 1500, 1522, 0.45f, false, "Langwith");
         shops.add(newShop);
     }
 
