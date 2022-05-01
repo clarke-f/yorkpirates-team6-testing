@@ -30,7 +30,8 @@ public class HUD {
 
     // Shop
     private final Table shop;
-    private final Label health;
+    private final Label welcome;
+    private final Label armour;
     private final Label damage;
     private final Label speed;
     private final Label openShop;
@@ -147,14 +148,17 @@ public class HUD {
         // Create shop table 
         shop = new Table();
         shop.setFillParent(true);
-        damage = new Label("Press 1 to upgrade damage", skin);
+        welcome = new Label("", skin);
+        shop.add(welcome).center().padBottom(50);
+        shop.row();
+        damage = new Label("", skin);
         shop.add(damage).center().padBottom(25);
         shop.row();
-        speed = new Label("Press 2 to upgrade speed", skin);
+        speed = new Label("", skin);
         shop.add(speed).center();
         shop.row();
-        health = new Label("Press 3 to upgrade health", skin);
-        shop.add(health).center().padTop(25);
+        armour = new Label("", skin);
+        shop.add(armour).center().padTop(25);
 
         // Start main table
 
@@ -189,6 +193,16 @@ public class HUD {
         // Update the score and loot
         score.setText(screen.points.GetString());
         loot.setText(screen.loot.GetString());
+        
+        // Update shop values
+        Player player = screen.getPlayer();
+        String currentArmour = String.format("Press 3 to upgrade armour - Currently have %s armour", player.getArmourString());
+        String currentDamage = String.format("Press 1 to upgrade damage - You currently do %s damage", player.getDamageString());
+        String currentSpeed = String.format("Press 2 to upgrade speed - You currently move at a speed of %s", player.getSpeedString());
+        welcome.setText("Welcome to the shop, you have " + screen.loot.GetString() + " gold to spend");
+        damage.setText(currentDamage);
+        armour.setText(currentArmour);
+        speed.setText(currentSpeed);
 
         // Calculate which part of the tutorial to show
         if(screen.getPlayer().getDistance() < 2){
@@ -217,7 +231,6 @@ public class HUD {
         }
 
         // Prompt the player to open the shop
-        Player player = screen.getPlayer();
         for(int i=0; i < screen.shops.size; i++){
             if((abs(screen.shops.get(i).x - player.x)) < (Gdx.graphics.getWidth()/15f)
             && (abs(screen.shops.get(i).y - player.y)) < (Gdx.graphics.getHeight()/10f)

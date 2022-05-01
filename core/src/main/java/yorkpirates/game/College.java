@@ -142,7 +142,7 @@ public class College extends GameObject {
                 
                 for (int i=0; i < screen.shops.size; i++){
                     if(screen.shops.get(i).name == collegeName){
-                        screen.shops.get(i).activate(screen, i);
+                        screen.shops.get(i).activate();
                     }
                 }
 

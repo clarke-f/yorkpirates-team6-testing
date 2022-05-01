@@ -2,6 +2,7 @@ package yorkpirates.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -261,6 +262,19 @@ public class GameScreen extends ScreenAdapter {
                 else{
                     shopOpened = true;
                 }
+            }
+        }
+
+        // Player upgrades
+        if (shopOpened){
+            if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)){
+                shops.get(0).upgrade(player, loot, "damage");
+            }
+            if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)){
+                shops.get(0).upgrade(player, loot, "speed");
+            }
+            if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)){
+                shops.get(0).upgrade(player, loot, "armour");
             }
         }
 

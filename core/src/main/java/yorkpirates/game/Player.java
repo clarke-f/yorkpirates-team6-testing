@@ -12,9 +12,12 @@ import com.badlogic.gdx.utils.TimeUtils;
 public class Player extends GameObject {
 
     // Player constants
+    public float SPEED = 70f; // Player movement speed.
+    public float DAMAGE = 20f;
+    public float ARMOUR = 0;
     private static final int POINT_FREQUENCY = 1000; // How often the player gains points by moving.
     private static final float CAMERA_SLACK = 0.1f; // What percentage of the screen the player can move in before the camera follows.
-    private static final float SPEED = 70f; // Player movement speed.
+    
     private static final int HEALTH = 200;
 
     // Movement calculation values
@@ -145,7 +148,7 @@ public class Player extends GameObject {
     @Override
     public void takeDamage(GameScreen screen, float damage, String projectileTeam){
         timeLastHit = TimeUtils.millis();
-        currentHealth -= damage;
+        currentHealth -= damage + ARMOUR;
         doBloodSplash = true;
 
         // Health-bar reduction
@@ -191,5 +194,17 @@ public class Player extends GameObject {
 
     public float getDistance() {
         return distance;
+    }
+
+    public String getArmourString(){
+        return Float.toString(ARMOUR);
+    }
+    
+    public String getDamageString(){
+        return Float.toString(DAMAGE);
+    }
+
+    public String getSpeedString(){
+        return Float.toString(SPEED);
     }
 }

@@ -28,6 +28,16 @@ public class ScoreManager {
 
     }
 
+    public boolean Sub(int amount){
+        if(score - amount >= 0){
+            score -= amount;
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
     /**
      *  Gets the score value in integer form.
      * @return  the score.
