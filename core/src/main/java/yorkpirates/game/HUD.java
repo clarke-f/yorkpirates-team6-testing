@@ -19,6 +19,7 @@ public class HUD {
 
     // Stage
     public Stage stage;
+    private final Table mainTable;
 
     // Tutorial
     private final Table tutorial;
@@ -64,10 +65,10 @@ public class HUD {
         // Generate stage and table
         stage = new Stage(screen.getViewport());
         Gdx.input.setInputProcessor(stage);
-        Table table = new Table();
-        table.setFillParent(true);
-        table.setTouchable(Touchable.enabled);
-        if(YorkPirates.DEBUG_ON) table.setDebug(true);
+        mainTable = new Table();
+        mainTable.setFillParent(true);
+        mainTable.setTouchable(Touchable.enabled);
+        if(YorkPirates.DEBUG_ON) mainTable.setDebug(true);
 
         // Create menu button
         ImageButton menuButton = new ImageButton(skin, "Menu");
@@ -158,19 +159,19 @@ public class HUD {
         // Start main table
 
         // Add menu button to table
-        table.row();
-        table.add(menuButton).size(150).left().top().pad(25);
+        mainTable.row();
+        mainTable.add(menuButton).size(150).left().top().pad(25);
 
         // Add tutorial to table
-        table.row();
-        table.add(tutorial.pad(100f));
+        mainTable.row();
+        mainTable.add(tutorial.pad(100f));
 
         // Add tracker to table
-        table.add().expand();
-        table.add(tracker);
+        mainTable.add().expand();
+        mainTable.add(tracker);
 
         // Add actors to the stage
-        stage.addActor(table);
+        stage.addActor(mainTable);
         stage.addActor(shop);
         stage.addActor(openShop);
 
@@ -234,7 +235,6 @@ public class HUD {
                 }
             }    
             else if(i == screen.shops.size-1){
-                //System.out.print("we are away from the shop");
                 openShop.setText("");
                 shop.setVisible(false);
                 screen.shopOpened = false;
@@ -242,9 +242,12 @@ public class HUD {
         }
         // Check if the player has opened or closed the shop
         if (screen.shopOpened){
+            mainTable.setVisible(false);
             shop.setVisible(true);
+            openShop.setText("Press e to close the shop");
         }
         else{
+            mainTable.setVisible(true);
             shop.setVisible(false);
         }
 
