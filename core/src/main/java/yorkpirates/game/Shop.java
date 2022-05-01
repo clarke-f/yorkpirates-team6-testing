@@ -29,6 +29,18 @@ public class Shop extends GameObject {
         changeImage(activatedSprite, 0); */
     }
 
+    public void upgrade(String upgradeSelected){
+        if (upgradeSelected == "1"){
+            // upgrade damage
+        }
+        if (upgradeSelected == "2"){
+            // upgrade speed
+        }
+        if (upgradeSelected == "3"){
+            // upgrade health
+        }
+    }
+
     @Override
     public void draw(SpriteBatch batch, float elapsedTime){
         batch.draw(anim.getKeyFrame(elapsedTime, true), x-width/2, y-width/2, width, height);

@@ -11,7 +11,6 @@ import java.util.Objects;
 
 import static java.lang.Math.abs;
 
-import java.io.Console;
 
 public class College extends GameObject {
 

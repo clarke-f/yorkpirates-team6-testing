@@ -13,6 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Scaling;
 
+import static java.lang.Math.abs;
+
 public class HUD {
 
     // Stage
@@ -24,6 +26,13 @@ public class HUD {
     private final Label tutorialLabel;
     private boolean tutorialComplete = false;
     private boolean canEndGame = false;
+
+    // Shop
+    private final Table shop;
+    private final Label health;
+    private final Label damage;
+    private final Label speed;
+    private final Label openShop;
 
     // Player counters
     private final Label score;
@@ -129,6 +138,23 @@ public class HUD {
         tutorial.add(tutorialLabel);
         if(YorkPirates.DEBUG_ON) tutorial.setDebug(true);
 
+        // Create shop prompt
+        openShop = new Label("", skin);
+        openShop.setBounds(10, 35, 16, 9);
+
+
+        // Create shop table 
+        shop = new Table();
+        shop.setFillParent(true);
+        damage = new Label("Press 1 to upgrade damage", skin);
+        shop.add(damage).center().padBottom(25);
+        shop.row();
+        speed = new Label("Press 2 to upgrade speed", skin);
+        shop.add(speed).center();
+        shop.row();
+        health = new Label("Press 3 to upgrade health", skin);
+        shop.add(health).center().padTop(25);
+
         // Start main table
 
         // Add menu button to table
@@ -143,8 +169,12 @@ public class HUD {
         table.add().expand();
         table.add(tracker);
 
-        // Add table to the stage
+        // Add actors to the stage
         stage.addActor(table);
+        stage.addActor(shop);
+        stage.addActor(openShop);
+
+        shop.setVisible(false);
     }
 
     /**
@@ -184,6 +214,38 @@ public class HUD {
             // Tutorial complete
             tutorial.setVisible(false);
         }
+
+        // Prompt the player to open the shop
+        Player player = screen.getPlayer();
+        for(int i=0; i < screen.shops.size; i++){
+            if((abs(screen.shops.get(i).x - player.x)) < (Gdx.graphics.getWidth()/15f)
+            && (abs(screen.shops.get(i).y - player.y)) < (Gdx.graphics.getHeight()/10f)
+            && screen.shops.get(i).activated){
+                openShop.setText("Press e to open the shop");
+            }
+        }
+
+        // Check if the player is outside any shop range
+        for(int i=0; i < screen.shops.size; i++){
+            if((abs(screen.shops.get(i).x - player.x)) < (Gdx.graphics.getWidth()/15f)
+            && (abs(screen.shops.get(i).y - player.y)) < (Gdx.graphics.getHeight()/10f)){
+                if(screen.shops.get(i).activated){
+                    break;
+                }
+            }    
+            else if(i == screen.shops.size-1){
+                //System.out.print("we are away from the shop");
+                openShop.setText("");
+            }
+        }
+        // Check if the player has opened or closed the shop
+        if (screen.shopOpened){
+            shop.setVisible(true);
+        }
+        else{
+            shop.setVisible(false);
+        }
+
 
         // Decide on and then display main player goal
         if(College.capturedCount >= screen.colleges.size-1){

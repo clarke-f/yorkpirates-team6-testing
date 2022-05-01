@@ -16,6 +16,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
+import static java.lang.Math.abs;
+
 public class GameScreen extends ScreenAdapter {
     // Team name constants
     public static final String playerTeam = "PLAYER";
@@ -31,6 +33,7 @@ public class GameScreen extends ScreenAdapter {
 
     // Shops
     public Array<Shop> shops;
+    public boolean shopOpened;
 
     // Sound
     public Music music;
@@ -146,6 +149,7 @@ public class GameScreen extends ScreenAdapter {
         Array<Texture> shopImages = new Array<>();
         shops = new Array<>();
         Shop newShop;
+        shopOpened = false;
 
         // alcuin
         shopImages.add(new Texture("shop.png"));
@@ -243,6 +247,21 @@ public class GameScreen extends ScreenAdapter {
         if(followPlayer) followPos = new Vector3(player.x, player.y, 0);
         if(Math.abs(game.camera.position.x - followPos.x) > 1f || Math.abs(game.camera.position.y - followPos.y) > 1f){
             game.camera.position.slerp(followPos, 0.1f);
+        }
+
+        // Call to open shop window
+        for(int i=0; i < shops.size; i++){
+            if(Gdx.input.isKeyJustPressed(Input.Keys.E)
+            && (abs(shops.get(i).x - player.x)) < (Gdx.graphics.getWidth()/15f)
+            && (abs(shops.get(i).y - player.y)) < (Gdx.graphics.getHeight()/10f)
+            && shops.get(i).activated){
+                if (shopOpened){
+                    shopOpened = false;
+                }
+                else{
+                    shopOpened = true;
+                }
+            }
         }
 
         // Call to pause the game
