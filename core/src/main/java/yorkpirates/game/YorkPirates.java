@@ -96,6 +96,7 @@ public class YorkPirates extends Game {
 	public void dispose () {
 		batch.dispose();
 		font.dispose();
+		screen.dispose();
 	}
 
 	/**

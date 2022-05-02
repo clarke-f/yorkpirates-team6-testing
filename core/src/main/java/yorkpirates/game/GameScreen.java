@@ -3,8 +3,6 @@ package yorkpirates.game;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -20,6 +18,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -77,10 +76,14 @@ public class GameScreen extends ScreenAdapter {
     // Trackers
     private float elapsedTime = 0;
     private boolean isPaused = false;
-    private boolean canFire = true;
     private float lastPause = 0;
     private float lastSave = 0;
     private float lastLoad = 0;
+
+    //Timers
+    private long lastShot = 0;
+    private long lastWeather = 0;
+    
 
     public static ArrayList<Actor> rains,snows,storms,mortars;
     public static ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
@@ -173,20 +176,14 @@ public class GameScreen extends ScreenAdapter {
         newShop  = new Shop(shopImage, 1500, 1522, 0.45f, false, "Langwith");
         shops.add(newShop);
 
+        lastShot = TimeUtils.millis();
+        lastWeather = TimeUtils.millis();
+
         //Weather and obstacles
 
         //init weather events
         initWeatherEvents();
-       
-        Timer t = new Timer();
-        TimerTask tt = new TimerTask() {
-            public void run(){
-                updateWeatherEvents();
-            }
-        };
-        t.scheduleAtFixedRate(tt, 500, 700);
 
-        //textures
         //barrels
         Texture barrel_brown = new Texture("barrel.png");
         Texture barrel_gold = new Texture("barrel_gold.png");
@@ -396,114 +393,43 @@ public class GameScreen extends ScreenAdapter {
      */
     private void update() {
 
-        // Call updates for all relevant objects
-        player.update(this, game.camera);
-        
-        Iterator<College> cIterator = colleges.iterator();
-
-        while (cIterator.hasNext()) {
-            College c = cIterator.next();
-            c.update(this);
+        if (TimeUtils.timeSinceMillis(lastWeather) >= 1000) {
+            lastWeather = TimeUtils.millis();
+            updateWeatherEvents();
         }
-        
-        
 
-        // for (College c : colleges) {
-        //     c.update(this);
-        // }
+        if (TimeUtils.timeSinceMillis(lastShot) >= 200) {
 
-        // Check for projectile creation, then call projectile update
-        if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)){
-            if(canFire){
+            // Check for projectile creation, then call projectile update
+            if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)){
                 Vector3 mouseVector = new Vector3(Gdx.input.getX(), Gdx.input.getY(),0);
                 Vector3 mousePos = game.camera.unproject(mouseVector);
 
                 projectiles.add(new Projectile(new Texture("tempProjectile.png"), player, mousePos.x, mousePos.y, playerTeam));
+                lastShot = TimeUtils.millis();
                 gameHUD.endTutorial();
-                canFire = false;
-                Thread t = new Thread(){
-                    public void run(){
-                        try{
-                            Thread.sleep((int) (1000 * player.projectileShootCooldown));
-                        }catch(InterruptedException e){}
-                        canFire = true;
-                    }
-                };
-                t.start();
-            }
-           
-        }
-        if(Gdx.input.isKeyJustPressed(Input.Keys.LEFT)){
-            if(canFire){
+            } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
                 projectiles.add(new Projectile(new Texture("tempProjectile.png"), player, 0, player.y, playerTeam));
+                lastShot = TimeUtils.millis();
                 gameHUD.endTutorial();
-                canFire = false;
-                Thread t = new Thread(){
-                    public void run(){
-                        try{
-                            Thread.sleep((int) (1000 * player.projectileShootCooldown));
-                        }catch(InterruptedException e){}
-                        canFire = true;
-                    }
-                };
-                t.start();
-            }
-        }
-        
-        if(Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)){
-            if(canFire){
-                Array<Texture> sprites = new Array<>();
-                sprites.add(new Texture("tempProjectile.png"));
+            } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
                 projectiles.add(new Projectile(new Texture("tempProjectile.png"), player, Gdx.graphics.getWidth(), player.y, playerTeam));
+                lastShot = TimeUtils.millis();
                 gameHUD.endTutorial();
-                canFire = false;
-                Thread t = new Thread(){
-                    public void run(){
-                        try{
-                            Thread.sleep((int) (1000 * player.projectileShootCooldown));
-                        }catch(InterruptedException e){}
-                        canFire = true;
-                    }
-                };
-                t.start();
-            }
-        }
-        if(Gdx.input.isKeyJustPressed(Input.Keys.UP)){
-            if(canFire){
-                Array<Texture> sprites = new Array<>();
-                sprites.add(new Texture("tempProjectile.png"));
-                projectiles.add(new Projectile(new Texture("tempProjectile.png"), player, player.x, Gdx.graphics.getHeight(), playerTeam));
-                gameHUD.endTutorial();
-                canFire = false;
-                Thread t = new Thread(){
-                    public void run(){
-                        try{
-                            Thread.sleep((int) (1000 * player.projectileShootCooldown));
-                        }catch(InterruptedException e){}
-                        canFire = true;
-                    }
-                };
-                t.start();
-            }
-        }
-        if(Gdx.input.isKeyJustPressed(Input.Keys.DOWN)){
-            if(canFire){
-                Array<Texture> sprites = new Array<>();
-                sprites.add(new Texture("tempProjectile.png"));
+            } else if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
                 projectiles.add(new Projectile(new Texture("tempProjectile.png"), player, player.x, 0, playerTeam));
+                lastShot = TimeUtils.millis();
                 gameHUD.endTutorial();
-                canFire = false;
-                Thread t = new Thread(){
-                    public void run(){
-                        try{
-                            Thread.sleep((int) (1000 * player.projectileShootCooldown));
-                        }catch(InterruptedException e){}
-                        canFire = true;
-                    }
-                };
-                t.start();
+            } else if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+                projectiles.add(new Projectile(new Texture("tempProjectile.png"), player, player.x, Gdx.graphics.getHeight(), playerTeam));
+                lastShot = TimeUtils.millis();
+                gameHUD.endTutorial();
             }
         }
+
+        // Call updates for all relevant objects
+        player.update(this, game.camera);
+        
         Iterator<Projectile> pIterator = projectiles.iterator();
 
         while (pIterator.hasNext()) {
@@ -513,9 +439,13 @@ public class GameScreen extends ScreenAdapter {
             }
         }
 
-        // for (int i = projectiles.size - 1; i >= 0; i--) {
-        //     projectiles.get(i).update(this);
-        // }
+          
+        Iterator<College> cIterator = colleges.iterator();
+
+        while (cIterator.hasNext()) {
+            College c = cIterator.next();
+            c.update(this);
+        }
 
         // Camera calculations based on player movement
         if(followPlayer) followPos = new Vector3(player.x, player.y, 0);
