@@ -35,7 +35,7 @@ public class Player extends GameObject {
     private boolean doBloodSplash = false;
 
     //weather
-    private Label weatherLabel;
+    public Label weatherLabel;
     private WeatherType currentWeatherType= WeatherType.NONE;
 
     /**

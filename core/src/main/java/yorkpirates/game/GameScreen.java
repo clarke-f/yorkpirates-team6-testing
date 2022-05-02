@@ -24,8 +24,8 @@ import com.badlogic.gdx.utils.ScreenUtils;
 
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
-
-
+import java.io.IOException;
+import java.nio.channels.NonReadableChannelException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -63,7 +63,7 @@ public class GameScreen extends ScreenAdapter {
     private final YorkPirates game;
 
     // Player
-    private final Player player;
+    private Player player;
     private String playerName;
     private Vector3 followPos;
     private boolean followPlayer = false;
@@ -83,6 +83,8 @@ public class GameScreen extends ScreenAdapter {
     private boolean isPaused = false;
     private boolean canFire = true;
     private float lastPause = 0;
+    private float lastSave = 0;
+    private float lastLoad = 0;
 
     public static ArrayList<Actor> rains = new ArrayList<Actor>();
     public static ArrayList<Actor> snows = new ArrayList<Actor>();
@@ -97,7 +99,7 @@ public class GameScreen extends ScreenAdapter {
      * Initialises the main game screen, as well as relevant entities and data.
      * @param game  Passes in the base game class for reference.
      */
-    public GameScreen(YorkPirates game){
+    public GameScreen(YorkPirates game) {
         this.game = game;
         playerName = "Player";
         // Initialise points and loot managers
@@ -122,7 +124,8 @@ public class GameScreen extends ScreenAdapter {
 
         // Initialise player
         sprites.add(new Texture("ship1.png"), new Texture("ship2.png"), new Texture("ship3.png"));
-        player = new Player(sprites, 2, 821, 489, 32, 16, playerTeam,l);
+        //player = new Player(sprites, 2, 821, 489, 32, 16, playerTeam,l);
+        player = XmlLoad.LoadPlayer(sprites);
         sprites.clear();
         followPos = new Vector3(player.x, player.y, 0f);
         game.camera.position.lerp(new Vector3(760, 510, 0f), 1f);
@@ -404,6 +407,16 @@ public class GameScreen extends ScreenAdapter {
         if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) && elapsedTime - lastPause > 0.1f){
             gamePause();
         }
+
+        //call to save the game
+        if(Gdx.input.isKeyJustPressed(Input.Keys.F8) && elapsedTime - lastSave > 0.1f){
+            saveState(player);
+        }
+
+        //call to load the game
+        if(Gdx.input.isKeyJustPressed(Input.Keys.F7) && elapsedTime - lastLoad > 0.1f){
+            loadSave();
+        }
     }
 
     /**
@@ -494,6 +507,39 @@ public class GameScreen extends ScreenAdapter {
      * @return  The viewport.
      */
     public FitViewport getViewport() { return viewport; }
+
+    //saves current state (currently only supports colleges and player)
+    public void saveState (Player player) {
+        lastSave = elapsedTime;
+        XmlLoad.Save(player, colleges);
+    }
+
+    //loads current save by creating new objects
+    public void loadSave(){
+
+        //creates new player object with information from xml file
+        Array<Texture> sprites = new Array<>();
+        lastLoad = elapsedTime;
+        sprites.add(new Texture("ship1.png"), new Texture("ship2.png"), new Texture("ship3.png"));
+        player = XmlLoad.LoadPlayer(sprites);
+        followPos = new Vector3(player.x, player.y, 0f);
+
+        //creates new college objects with information from xml file
+        Set<College> collegesToReplace = new HashSet<>();
+        for (College toLoadCollege : colleges){
+            String toLoadCollegeName = toLoadCollege.collegeName;
+            String newteam = XmlLoad.LoadCollegeTeam(toLoadCollegeName);
+            Float[] newpos = XmlLoad.LoadCollegePosition(toLoadCollegeName);
+            College addCollege = new College(toLoadCollege.collegeImages, newpos[0], newpos[1], toLoadCollege.scale, toLoadCollege.collegeName, newteam, player, toLoadCollege.initialBoatTexture);
+            //adds boats to college using xml file (currently kinda broken)
+            for (Float[] newBoat : XmlLoad.LoadCollegeBoats(toLoadCollegeName)) {
+                System.out.println(String.valueOf(newBoat[0]));
+                addCollege.addBoat(newBoat[0], newBoat[1], 0);
+            }
+            collegesToReplace.add(addCollege);
+        }
+        colleges = collegesToReplace;
+    }
 
     /**
      * Disposes of disposables when game finishes execution.

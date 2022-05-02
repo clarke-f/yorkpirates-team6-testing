@@ -1,5 +1,6 @@
 package yorkpirates.game;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
@@ -20,11 +21,13 @@ public class College extends GameObject {
 
     private float splashTime;
     private long lastShotFired;
-    private final String collegeName;
-    private final Array<Texture> collegeImages;
+    public final String collegeName;
+    public final Array<Texture> collegeImages;
+    public final float scale;
+    public final String initialBoatTexture;
     private Array<Texture> boatTexture;
-    private Array<GameObject> boats;
-    private Array<Float> boatRotations;
+    public Array<GameObject> boats;
+    public Array<Float> boatRotations;
 
     private boolean doBloodSplash = false;
 
@@ -42,6 +45,8 @@ public class College extends GameObject {
         this.boats = new Array<>();
         this.boatRotations = new Array<>();
         this.boatTexture.add(new Texture(Gdx.files.internal(boatTexture)));
+        this.scale = scale;
+        this.initialBoatTexture = boatTexture;
         collegeImages = new Array<>();
         for(int i = 0; i < sprites.size; i++) {
             collegeImages.add(sprites.get(i));
@@ -195,4 +200,5 @@ public class College extends GameObject {
         boats.add(new GameObject(boatTexture, 0, this.x+x, this.y+y, 25, 12, team));
         boatRotations.add(rotation);
     }
+
 }
