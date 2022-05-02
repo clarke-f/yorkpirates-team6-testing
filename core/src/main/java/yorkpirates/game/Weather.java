@@ -1,6 +1,9 @@
 package yorkpirates.game;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Array;
 
@@ -9,6 +12,9 @@ public class Weather {
 
     public int xpos, ypos, xoff, yoff;
     public WeatherType weatherType;
+    private static Timer t;
+
+    private static int disSpeed = 0;
 
     public Weather(int xpos, int ypos, int xoff, int yoff, WeatherType weatherType){
         this.xpos = xpos;
@@ -16,6 +22,8 @@ public class Weather {
         this.xoff = xoff;
         this.yoff = yoff;
         this.weatherType = weatherType;
+        
+        
         
     }
 
@@ -28,8 +36,8 @@ public class Weather {
             ret = "";
         }else if(weatherType == WeatherType.STORM){
             ret = "";
-        }else if(weatherType == WeatherType.JAMESFURY){
-            ret = "james is coming...";
+        }else if(weatherType == WeatherType.VOLCANO){
+            ret = "Volcano is erupting...";
         }else if(weatherType == WeatherType.NONE){
             ret = "";
         }
@@ -45,32 +53,50 @@ public class Weather {
         return WeatherType.NONE;
     }
    
-    public static void DisadvantagePlayer(Player player, WeatherType weatherType,ArrayList<Actor> disList ){
+    public static void DisadvantagePlayer(GameScreen gameScreen, Player player, WeatherType weatherType,ArrayList<Actor> disList ){
         //set players attributes so they have a disadvantage
         //we also need to draw some rectangles to represent rain/snow so they're
         //visibility is impeded.
         
         if(weatherType == WeatherType.RAIN){
-            player.SPEED = 60f;
+            disSpeed = 5;
         }else if (weatherType == WeatherType.SNOW){
-            player.SPEED = 50f;
+            disSpeed = 10;
             player.projectileShootCooldown = 0.5f;
             
         }else if(weatherType == WeatherType.STORM){
-            player.SPEED = 30f;
+            disSpeed = 20;
             player.projectileShootCooldown = 0.8f;
-        }else if (weatherType == WeatherType.JAMESFURY){
-            player.SPEED = 10f;
-            player.playerProjectileDamage = 200f;
-            player.projectileShootCooldown = 1f;
+        }else if (weatherType == WeatherType.VOLCANO){
+            disSpeed = 30;
+            // player.playerProjectileDamage = 200f;
+            t =  new Timer();
+            TimerTask tt = new TimerTask(){
+                public void run(){
+                    try{
+                        Thread.sleep(1000);
+                    }catch(InterruptedException e){}
+                    player.takeDamage(gameScreen, 20, "ENEMY");
+                }
+            };
+            t.scheduleAtFixedRate(tt, 0, 2000);
+        
+            player.projectileShootCooldown = 0.9f;
         }
+        player.SPEED-=disSpeed;
         for(Actor r : disList){
             HUD.stage.addActor(r);
         }
     }
     public static void ResetPlayerDisadvantage(Player player){
-        player.SPEED = 70f;
-        player.playerProjectileDamage = 20;
+
+        //remove timer
+        if(t != null){
+            t.cancel();
+        }
+       
+        //disadvatange player attributes
+        player.SPEED+=disSpeed;
         player.projectileShootCooldown = 0.1f;
         Array<Actor> actors = HUD.stage.getActors();
         for(int i = actors.size-1; i> 0;i--){
@@ -80,6 +106,7 @@ public class Weather {
                 a.remove();
             }
         }
+        disSpeed = 0;
     }
 }
 
