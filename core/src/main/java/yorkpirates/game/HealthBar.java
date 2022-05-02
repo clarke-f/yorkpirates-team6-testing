@@ -1,7 +1,6 @@
 package yorkpirates.game;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.utils.Array;
 
 public class HealthBar extends GameObject {
 
@@ -12,9 +11,8 @@ public class HealthBar extends GameObject {
      * @param entity    The college which this bar is attached to.
      * @param frames    The animation frames, or a single sprite.
      */
-    public HealthBar(GameObject entity,Array<Texture> frames) {
-        super(frames, 0, entity.x, entity.y + entity.height/2 + 2f, entity.width, 2f, entity.team);
-
+    public HealthBar(GameObject entity, Texture texture) {
+        super(texture, entity.x, entity.y + entity.height/2 + 2f, entity.width, 2f, entity.team);
         startWidth = entity.width;
         setMaxHealth(entity.maxHealth);
     }

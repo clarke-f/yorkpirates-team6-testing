@@ -2,18 +2,13 @@ package yorkpirates.game;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.Array;
 
 public class Shop extends GameObject {
     public String name;
     public boolean activated;
-    private Array<Texture> shopImage;
-    
-    
 
-    public Shop(Array<Texture> shopImage, float x, float y, float scale, Boolean activated, String name){
-        super(shopImage, 0f, x, y, shopImage.get(0).getWidth()*scale, shopImage.get(0).getHeight()*scale, "neutral");
-        this.shopImage = shopImage;
+    public Shop(Texture shopImage, float x, float y, float scale, Boolean activated, String name){
+        super(shopImage, x, y, shopImage.getWidth()*scale, shopImage.getHeight()*scale, "neutral");
         this.activated = activated;
         this.name = name;
     }
@@ -48,6 +43,6 @@ public class Shop extends GameObject {
 
     @Override
     public void draw(SpriteBatch batch, float elapsedTime){
-        batch.draw(anim.getKeyFrame(elapsedTime, true), x-width/2, y-width/2, width, height);
+        super.draw(batch, elapsedTime);
     }
 }
