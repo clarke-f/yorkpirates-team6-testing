@@ -75,7 +75,7 @@ public class College extends GameObject {
      * Called once per frame. Used to perform calculations such as collision.
      * @param screen    The main game screen.
      */
-    public void update(GameScreen screen){
+    public int update(GameScreen screen){
         direction.move();
         float playerX = screen.getPlayer().x;
         float playerY = screen.getPlayer().y;
@@ -95,8 +95,8 @@ public class College extends GameObject {
                 }
             }else if(Objects.equals(collegeName, "Home")){
                 boolean victory = true;
-                for(int i = 0; i < screen.colleges.size; i++) {
-                    if(!Objects.equals(screen.colleges.get(i).team, GameScreen.playerTeam)){
+                for (College c : screen.colleges) {
+                    if(!Objects.equals(c.team, GameScreen.playerTeam)){
                         victory = false;
                     }
                 }
@@ -117,6 +117,8 @@ public class College extends GameObject {
                 splashTime += 1;
             }
         }
+
+        return 0;
     }
 
     /**
@@ -133,7 +135,7 @@ public class College extends GameObject {
         if(currentHealth > 0){
             collegeBar.resize(currentHealth);
         }else{
-            if(!Objects.equals(team, GameScreen.playerTeam)){ // Checks if the college is an enemy of the player
+            if(!Objects.equals(team, GameScreen.playerTeam)) { // Checks if the college is an enemy of the player
                 // College taken over
                 int pointsGained = 50;
                 screen.points.Add(pointsGained);
@@ -163,21 +165,8 @@ public class College extends GameObject {
                 College.capturedCount++;
                 direction.changeImage(indicatorSprite,0);
                 team = GameScreen.playerTeam;
-            }else{
-                // Destroy college
-                collegeBar = null;
-                direction = null;
-                destroy(screen);
             }
         }
-    }
-
-    /**
-     * Called when the college needs to be destroyed.
-     * @param screen    The main game screen.
-     */
-    private void destroy(GameScreen screen){
-        screen.colleges.removeValue(this,true);
     }
 
     /**
@@ -187,7 +176,7 @@ public class College extends GameObject {
      */
     @Override
     public void draw(SpriteBatch batch, float elapsedTime){
-        if(doBloodSplash)   batch.setShader(shader); // Set red shader to the batch
+        if(doBloodSplash)   batch.setShader(null); // Set red shader to the batch
         else                batch.setShader(null);
 
         // Draw college

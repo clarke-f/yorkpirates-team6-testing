@@ -1,5 +1,7 @@
 package yorkpirates.game;
 
+import java.util.Iterator;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -8,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 
 public class Player extends GameObject {
 
@@ -15,9 +18,12 @@ public class Player extends GameObject {
     public float SPEED = 70f; // Player movement speed.
     public float DAMAGE = 20f;
     public float ARMOUR = 0;
+    public float projectileShootCooldown = 0.1f;
+  
     private static final int POINT_FREQUENCY = 1000; // How often the player gains points by moving.
     private static final float CAMERA_SLACK = 0.1f; // What percentage of the screen the player can move in before the camera follows.
     
+  
     private static final int HEALTH = 200;
 
     // Movement calculation values
@@ -31,6 +37,13 @@ public class Player extends GameObject {
     private long timeLastHit;
     private boolean doBloodSplash = false;
 
+    //weather
+    private Label weatherLabel;
+    private WeatherType currentWeatherType= WeatherType.NONE;
+
+    //game screen
+    private GameScreen gameScreen;
+
     /**
      * Generates a generic object within the game with animated frame(s) and a hit-box.
      * @param frames    The animation frames, or a single sprite.
@@ -41,11 +54,12 @@ public class Player extends GameObject {
      * @param height    The size of the object in the y-axis.
      * @param team      The team the player is on.
      */
-    public Player(Array<Texture> frames, float fps, float x, float y, float width, float height, String team){
+    public Player(Array<Texture> frames, float fps, float x, float y, float width, float height, String team,Label weatherLabel, GameScreen gameScreen){
         super(frames, fps, x, y, width, height, team);
         lastMovementScore = 0;
         splashTime = 0;
-
+        this.weatherLabel = weatherLabel;
+        this.gameScreen = gameScreen;
         // Generate health
         Array<Texture> sprites = new Array<>();
         sprites.add(new Texture("allyHealthBar.png"));
@@ -88,6 +102,8 @@ public class Player extends GameObject {
                     }
                 }
             }
+        }else{
+            HUD.speedLbl.setText("0mph");
         }
         updateHitboxPos();
         // Track distance travelled
@@ -111,6 +127,28 @@ public class Player extends GameObject {
             if(currentHealth > maxHealth) currentHealth = maxHealth;
             playerHealth.resize(currentHealth);
         }
+
+        //collide with obstacle
+        for(Iterator<Obstacle> it = GameScreen.obstacles.iterator();it.hasNext();){
+            Obstacle o = it.next();
+            if(overlaps(o.hitBox)){
+                
+                if(o instanceof Barrel){
+                    Barrel b = (Barrel)o;
+                    if(b.type == BarrelType.BROWN){
+                        takeDamage(screen, b.damage, "ENEMY");
+                    }else{
+                        int randMoney = (int)Math.floor(6 - 2 + 1) + 2;
+                        screen.loot.Add(randMoney);
+                    }
+                    it.remove();
+                }else{
+                    takeDamage(screen, o.damage, "ENEMY");
+                    move(-500, -500);
+                }
+            }
+        }
+        
     }
 
     /**
@@ -136,9 +174,37 @@ public class Player extends GameObject {
     public void move(float x, float y){
         this.x += x * Gdx.graphics.getDeltaTime();
         this.y += y * Gdx.graphics.getDeltaTime();
+        HUD.speedLbl.setText(SPEED + "mph");
         playerHealth.move(this.x, this.y + height/2 + 2f); // Healthbar moves with player
     }
+    public void checkForWeather(){
+    
+        WeatherType type = Weather.WhichWeather((int)this.x, (int)this.y, GameScreen.weathers);
+        // HUD.UpdateWeatherLabel(this.x + " | " + this.y,weatherLabel);
+        //only check if its different weather
+        if(currentWeatherType != type){
+            Weather.ResetPlayerDisadvantage(this);
+            if(type == WeatherType.NONE){
 
+                HUD.UpdateWeatherLabel("",weatherLabel);
+            }else{
+                //update weather label to show user which weather event they're in 
+                HUD.UpdateWeatherLabel(Weather.getWeatherLabelText(type),weatherLabel);
+                //need to disadvantage the player in some way
+                if(type == WeatherType.RAIN){
+                    Weather.DisadvantagePlayer(gameScreen,this,type,GameScreen.rains);
+                }else if (type == WeatherType.SNOW){
+                    Weather.DisadvantagePlayer(gameScreen,this,type,GameScreen.snows);
+                }else if (type == WeatherType.STORM){
+                    Weather.DisadvantagePlayer(gameScreen,this,type,GameScreen.storms);
+                }else if(type == WeatherType.VOLCANO){
+                    Weather.DisadvantagePlayer(gameScreen,this, type, GameScreen.volcanos);
+                }
+            }
+        }
+        currentWeatherType = type;
+    }
+    
     /**
      * Called when a projectile hits the college.
      * @param screen            The main game screen.
@@ -152,11 +218,15 @@ public class Player extends GameObject {
         doBloodSplash = true;
 
         // Health-bar reduction
-        if(currentHealth > 0){
-            playerHealth.resize(currentHealth);
-        }else{
-            playerHealth = null;
-            screen.gameEnd(false);
+        playerHealth.resize(currentHealth);
+        if(currentHealth <= 0){
+            //this is to run it on the main thread as to not crash the whole thing
+            Gdx.app.postRunnable(new Runnable() {
+                public void run () {
+                    screen.gameEnd(false);
+                }
+            });
+           
         }
     }
 
@@ -180,7 +250,7 @@ public class Player extends GameObject {
         // Generates the sprite
         Texture frame = anim.getKeyFrame((currentHealth/maxHealth > 0.66f) ? 0 : ((currentHealth/maxHealth > 0.33f) ? 2 : 1), true);
         if(doBloodSplash){
-            batch.setShader(shader); // Set our grey-out shader to the batch
+            // batch.setShader(shader); // Set our grey-out shader to the batch
         } float rotation = (float) Math.toDegrees(Math.atan2(previousDirectionY, previousDirectionX));
 
         // Draws sprite and health-bar

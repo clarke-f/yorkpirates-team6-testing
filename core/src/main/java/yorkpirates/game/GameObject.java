@@ -4,26 +4,19 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 
 public class GameObject {
-
-    public float x;
-    public float y;
-    public float width;
-    public float height;
-
+    public float x, y, width, height, currentHealth;
     public int maxHealth;
-    public float currentHealth;
 
     String team;
     Texture sprite;
     Rectangle hitBox;
     Animation<Texture> anim;
 
-    ShaderProgram shader = new ShaderProgram(Gdx.files.internal("red.vsh"), Gdx.files.internal("red.fsh"));
+    // ShaderProgram shader = new ShaderProgram(Gdx.files.internal("red.vsh"), Gdx.files.internal("red.fsh"));
 
     /**
      * Generates a generic object within the game with animated frame(s) and a hit-box.

@@ -18,7 +18,7 @@ public class DesktopLauncher {
 
 	private static Lwjgl3ApplicationConfiguration getDefaultConfiguration() {
 		Lwjgl3ApplicationConfiguration configuration = new Lwjgl3ApplicationConfiguration();
-		configuration.setTitle( "York Pirates!");
+		configuration.setTitle("York Pirates!");
 		configuration.useVsync(true);
 		//// Limits FPS to the refresh rate of the currently active monitor.
 		configuration.setForegroundFPS(Lwjgl3ApplicationConfiguration.getDisplayMode().refreshRate);

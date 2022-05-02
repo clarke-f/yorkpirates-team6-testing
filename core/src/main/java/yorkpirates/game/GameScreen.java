@@ -1,10 +1,17 @@
 package yorkpirates.game;
 
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -15,22 +22,34 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
+
 import static java.lang.Math.abs;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+
 
 public class GameScreen extends ScreenAdapter {
     // Team name constants
     public static final String playerTeam = "PLAYER";
     public static final String enemyTeam = "ENEMY";
 
+
+    //weathers and positions
+   
+    public static ArrayList<Weather> weathers = new ArrayList<Weather> ();
+
     // Score managers
     public ScoreManager points;
     public ScoreManager loot;
 
     // Colleges
-    public Array<College> colleges;
-    public Array<Projectile> projectiles;
+    public Set<College> colleges;
+    public Set<Projectile> projectiles;
 
     // Shops
     public Array<Shop> shops;
@@ -61,7 +80,13 @@ public class GameScreen extends ScreenAdapter {
     // Trackers
     private float elapsedTime = 0;
     private boolean isPaused = false;
+    private boolean canFire = true;
     private float lastPause = 0;
+
+    public static ArrayList<Actor> rains,snows,storms,volcanos;
+    public static ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
+    
+    
 
     /**
      * Initialises the main game screen, as well as relevant entities and data.
@@ -70,7 +95,6 @@ public class GameScreen extends ScreenAdapter {
     public GameScreen(YorkPirates game){
         this.game = game;
         playerName = "Player";
-
         // Initialise points and loot managers
         points = new ScoreManager();
         loot = new ScoreManager();
@@ -81,7 +105,7 @@ public class GameScreen extends ScreenAdapter {
         HUDCam.setToOrtho(false, game.camera.viewportWidth, game.camera.viewportHeight);
         viewport = new FitViewport( Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), HUDCam);
         gameHUD =  new HUD(this);
-
+        Label l = HUD.AddWeatherLabel("");
         //initialise sound
         music = Gdx.audio.newMusic(Gdx.files.internal("Pirate1_Theme1.ogg"));
         music.setLooping(true);
@@ -93,7 +117,7 @@ public class GameScreen extends ScreenAdapter {
 
         // Initialise player
         sprites.add(new Texture("ship1.png"), new Texture("ship2.png"), new Texture("ship3.png"));
-        player = new Player(sprites, 2, 821, 489, 32, 16, playerTeam);
+        player = new Player(sprites, 2, 821, 489, 32, 16, playerTeam,l,this);
         sprites.clear();
         followPos = new Vector3(player.x, player.y, 0f);
         game.camera.position.lerp(new Vector3(760, 510, 0f), 1f);
@@ -104,7 +128,7 @@ public class GameScreen extends ScreenAdapter {
 
         // Initialise colleges
         College.capturedCount = 0;
-        colleges = new Array<>();
+        colleges = new HashSet<>();
         College newCollege;
         Array<Texture> collegeSprites = new Array<>();
 
@@ -144,7 +168,7 @@ public class GameScreen extends ScreenAdapter {
         colleges.add(new College(collegeSprites, 700, 525, 0.7f,"Home",playerTeam,player, "ship1.png"));
 
         // Initialise projectiles array to be used storing live projectiles
-        projectiles = new Array<>();
+        projectiles = new HashSet<>();
 
         // Initialise shops
         Array<Texture> shopImages = new Array<>();
@@ -162,8 +186,145 @@ public class GameScreen extends ScreenAdapter {
         //langwith
         newShop  = new Shop(shopImages, 1500, 1522, 0.45f, false, "Langwith");
         shops.add(newShop);
+
+        //Weather and obstacles
+
+        //init weather events
+        initWeatherEvents();
+       
+        Timer t = new Timer();
+        TimerTask tt = new TimerTask() {
+            public void run(){
+                player.checkForWeather();
+            }
+        };
+        t.scheduleAtFixedRate(tt, 500, 700);
+
+        //textures
+        //barrels
+        Array<Texture> barrel_brown = new Array<Texture>();
+        barrel_brown.add(new Texture(Gdx.files.internal("barrel.png")));
+
+        Array<Texture> barrel_gold = new Array<Texture>();
+        barrel_gold.add(new Texture(Gdx.files.internal("barrel_gold.png")));
+
+        //icebergs
+        Array<Texture> iceberg = new Array<Texture>();
+        iceberg.add(new Texture(Gdx.files.internal("iceberg.png")));
+
+        //objects
+        //barrels 
+        Barrel b1 = new Barrel(barrel_brown, 0f, 821f, 608f, 20f, 20f, "ENEMY",40,BarrelType.BROWN);
+        Barrel b2 = new Barrel(barrel_gold, 0f,1086f, 787f, 20f, 20f, "ENEMY",0,BarrelType.GOLD);
+        Barrel b3 = new Barrel(barrel_brown, 0f,1299f, 605f, 20f, 20f, "ENEMY",40,BarrelType.BROWN);
+        Barrel b4 = new Barrel(barrel_brown, 0f,1619f, 524f, 20f, 20f, "ENEMY",40,BarrelType.BROWN);
+        Barrel b5 = new Barrel(barrel_gold, 0f,1936f, 801f, 20f, 20f, "ENEMY",0,BarrelType.GOLD);
+        Barrel b6 = new Barrel(barrel_brown, 0f,1700f, 1532f, 20f, 20f, "ENEMY",40,BarrelType.BROWN);
+        Barrel b7 = new Barrel(barrel_brown, 0f,546f, 1131f, 20f, 20f, "ENEMY",40,BarrelType.BROWN);
+        //icebergs
+        Obstacle ice1 = new Obstacle(iceberg,0, 950, 600, 50, 40, "ENEMY",100);
+        Obstacle ice2 = new Obstacle(iceberg,0, 1530, 500, 50, 40, "ENEMY",100);
+        Obstacle ice3 = new Obstacle(iceberg,0, 565, 1075, 50, 40, "ENEMY",100);
+        Obstacle ice4 = new Obstacle(iceberg,0, 1111, 1729, 50, 40, "ENEMY",100);
+        
+        obstacles.add(b1);
+        obstacles.add(b2);
+        obstacles.add(b3);
+        obstacles.add(b4);
+        obstacles.add(b5);
+        obstacles.add(b6);
+        obstacles.add(b7);
+        
+        obstacles.add(ice1);
+        obstacles.add(ice2);
+        obstacles.add(ice3);
+        obstacles.add(ice4);
+
+        //generate the weather animations
+        generateRain();
+        generateSnow();
+        generateStorm();
+
+    }
+    private void generateRain(){
+        Texture rain = new Texture(Gdx.files.internal("rain.png"));
+
+        int numOfDrops = (int)Math.floor(Math.random()*(10-6+1)+6);
+
+        for(int i =0;i<numOfDrops;i++){
+            int x = (int)Math.floor(Math.random()*(((Gdx.graphics.getWidth()/2)+ 200) - ((Gdx.graphics.getWidth()/2)-200)+1) + (Gdx.graphics.getWidth()/2)-200);
+            int y = (int)Math.floor(Math.random()*(((Gdx.graphics.getHeight()/2)+200) - ((Gdx.graphics.getHeight()/2)-200)+1) + (Gdx.graphics.getHeight()/2)-200);
+            int size = (int)Math.floor(Math.random()*(80-40+1)+40);
+
+            Rain rrain = new Rain(x, y, size,size,rain,0.6f);
+            rains.add(rrain);
+        }
+    }
+    private void generateSnow(){
+        Texture snow = new Texture(Gdx.files.internal("snow.png"));
+
+        int numOfFlakes = (int)Math.floor(Math.random()*(10-6+1)+6);
+        
+        for(int i =0;i<numOfFlakes;i++){
+            int x = (int)Math.floor(Math.random()*(((Gdx.graphics.getWidth()/2)+ 200) - ((Gdx.graphics.getWidth()/2)-200)+1) + (Gdx.graphics.getWidth()/2)-200);
+            int y = (int)Math.floor(Math.random()*(((Gdx.graphics.getHeight()/2)+200) - ((Gdx.graphics.getHeight()/2)-200)+1) + (Gdx.graphics.getHeight()/2)-200);
+            int size = (int)Math.floor(Math.random()*(80-40+1)+40);
+
+            Snow rsnow = new Snow(x, y, size,size,snow,0.7f);
+            snows.add(rsnow);
+        }
     }
 
+    private void generateStorm(){
+        Texture rain = new Texture(Gdx.files.internal("rain.png"));
+        Texture snow = new Texture(Gdx.files.internal("snow.png"));
+        for(int i =0;i<6;i++){
+            int x = (int)Math.floor(Math.random()*(((Gdx.graphics.getWidth()/2)+ 200) - ((Gdx.graphics.getWidth()/2)-200)+1) + (Gdx.graphics.getWidth()/2)-200);
+            int y = (int)Math.floor(Math.random()*(((Gdx.graphics.getHeight()/2)+200) - ((Gdx.graphics.getHeight()/2)-200)+1) + (Gdx.graphics.getHeight()/2)-200);
+            int size = (int)Math.floor(Math.random()*(80-40+1)+40);
+
+            Snow rsnow = new Snow(x, y, size,size,snow,0.7f);
+            storms.add(rsnow);
+        }
+        
+        for(int i =0;i<6;i++){
+            int x = (int)Math.floor(Math.random()*(((Gdx.graphics.getWidth()/2)+ 200) - ((Gdx.graphics.getWidth()/2)-200)+1) + (Gdx.graphics.getWidth()/2)-200);
+            int y = (int)Math.floor(Math.random()*(((Gdx.graphics.getHeight()/2)-200) - ((Gdx.graphics.getHeight()/2)+200)+1) + (Gdx.graphics.getHeight()/2)+200);
+            int size = (int)Math.floor(Math.random()*(80-40+1)+40);
+         
+            Rain rrain = new Rain(x, y, size,size,rain,0.6f);
+            storms.add(rrain);
+            
+        }
+
+        //make screen darker
+        RectangleColour stormback = new RectangleColour(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),new Color(0,0,0,0.3f));
+        storms.add(stormback);
+    }
+    private void initWeatherEvents(){
+        //animations
+        rains = new ArrayList<Actor>();
+        snows = new ArrayList<Actor>();
+        storms = new ArrayList<Actor>();
+        volcanos = new ArrayList<Actor>((Arrays.asList(new RectangleColour(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), new Color(255, 0, 0, 0.5f)))));
+
+        //postion of weathers on map
+        Weather rain =  new Weather(820, 980, 1000,100, WeatherType.RAIN);
+        Weather rain2 =  new Weather(1770, 2300, 150,150, WeatherType.RAIN);
+        Weather snow =  new Weather(1190, 911, 100,100, WeatherType.SNOW);
+        Weather storm =  new Weather(1700, 678, 100,100, WeatherType.STORM);
+        Weather storm2 =  new Weather(670, 700, 150,150, WeatherType.STORM);
+        Weather storm3 =  new Weather(400,1000, 200,150, WeatherType.STORM);
+        Weather volcano =  new Weather(1380, 1770, 200,200, WeatherType.VOLCANO);
+
+        weathers.add(rain);
+        weathers.add(rain2);
+        weathers.add(snow);
+        weathers.add(storm);
+        weathers.add(storm2);
+        weathers.add(storm3);
+        weathers.add(volcano);
+    }
     /**
      * Is called once every frame. Runs update(), renders the game and then the HUD.
      * @param delta The time passed since the previously rendered frame.
@@ -185,8 +346,8 @@ public class GameScreen extends ScreenAdapter {
         tiledMapRenderer.render();
 
         // Draw Projectiles
-        for(int i = 0; i < projectiles.size; i++) {
-            projectiles.get(i).draw(game.batch, 0);
+        for (Projectile p : projectiles) {
+            p.draw(game.batch, 0);
         }
 
         // Draw Player, Player Health and Player Name
@@ -200,16 +361,22 @@ public class GameScreen extends ScreenAdapter {
         }
 
         // Draw Colleges
-        for(int i = 0; i < colleges.size; i++) {
-            colleges.get(i).draw(game.batch, 0);
+        for (College c : colleges) {
+            c.draw(game.batch, 0);
         }
-
+        
         // Draw Shops
         for (int i = 0; i < shops.size; i++){
             if (shops.get(i).activated){
                 shops.get(i).draw(game.batch, 0);
             }
         }
+
+        // Draw Obstacles
+        for(Obstacle o : obstacles){
+            o.draw(game.batch, 0);
+        }
+
         game.batch.end();
 
         // Draw HUD
@@ -224,25 +391,60 @@ public class GameScreen extends ScreenAdapter {
     /**
      * Is called once every frame. Used for game calculations that take place before rendering.
      */
-    private void update(){
+    private void update() {
+
         // Call updates for all relevant objects
         player.update(this, game.camera);
-        for(int i = 0; i < colleges.size; i++) {
-            colleges.get(i).update(this);
+        
+        Iterator<College> cIterator = colleges.iterator();
+
+        while (cIterator.hasNext()) {
+            College c = cIterator.next();
+            c.update(this);
         }
+        
+        
+
+        // for (College c : colleges) {
+        //     c.update(this);
+        // }
 
         // Check for projectile creation, then call projectile update
-        if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)){
-            Vector3 mouseVector = new Vector3(Gdx.input.getX(), Gdx.input.getY(),0);
-            Vector3 mousePos = game.camera.unproject(mouseVector);
+        if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)){
+            if(canFire){
+                Vector3 mouseVector = new Vector3(Gdx.input.getX(), Gdx.input.getY(),0);
+                Vector3 mousePos = game.camera.unproject(mouseVector);
+    
+                Array<Texture> sprites = new Array<>();
+                sprites.add(new Texture("tempProjectile.png"));
+                projectiles.add(new Projectile(sprites, 0, player, mousePos.x, mousePos.y, playerTeam));
+                gameHUD.endTutorial();
+                canFire = false;
+                Thread t = new Thread(){
+                    public void run(){
+                        try{
+                            Thread.sleep((int) (1000 * player.projectileShootCooldown));
+                        }catch(InterruptedException e){}
+                        canFire = true;
+                    }
+                };
+                t.start();
+            }
+           
+        } 
+        
+        Iterator<Projectile> pIterator = projectiles.iterator();
 
-            Array<Texture> sprites = new Array<>();
-            sprites.add(new Texture("tempProjectile.png"));
-            projectiles.add(new Projectile(sprites, 0, player, mousePos.x, mousePos.y, playerTeam));
-            gameHUD.endTutorial();
-        } for(int i = projectiles.size - 1; i >= 0; i--) {
-            projectiles.get(i).update(this);
+        while (pIterator.hasNext()) {
+            Projectile p = pIterator.next();
+            if (p.update(this) == 0) {
+                pIterator.remove();
+            }
         }
+
+        // for (int i = projectiles.size - 1; i >= 0; i--) {
+        //     projectiles.get(i).update(this);
+        // }
 
         // Camera calculations based on player movement
         if(followPlayer) followPos = new Vector3(player.x, player.y, 0);
