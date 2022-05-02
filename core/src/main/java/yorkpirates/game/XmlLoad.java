@@ -25,8 +25,8 @@ import com.badlogic.gdx.utils.Array;
 public class XmlLoad {
 
     //creates strings showing where files should be stored and loaded. should point to same file. trying to work out how to store in assets atm bear with me.
-    static String LoadPath = "save.xml";
-    static String StorePath = "save.xml";
+    static String LoadPath = "assets/save.xml";
+    static String StorePath = "assets/save.xml";
 
     //loads xml file into a root element
     private static Element LoadFile (){

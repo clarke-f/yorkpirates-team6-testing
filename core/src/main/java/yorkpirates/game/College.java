@@ -197,7 +197,7 @@ public class College extends GameObject {
      * @param y The y position of the new boat relative to the college.
      */
     public void addBoat(float x, float y, float rotation){
-        boats.add(new GameObject(boatTexture, 0, this.x+x, this.y+y, 25, 12, team));
+        boats.add(new GameObject(boatTexture, 0, x, y, 25, 12, team));
         boatRotations.add(rotation);
     }
 
