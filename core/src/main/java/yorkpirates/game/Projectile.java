@@ -34,7 +34,7 @@ public class Projectile extends GameObject{
         this.origin = origin;
         if(origin instanceof Player){
             Player p = (Player)origin;
-            projectileDamage = p.playerProjectileDamage;
+            projectileDamage = p.DAMAGE;
         }
         
         // Speed calculations
