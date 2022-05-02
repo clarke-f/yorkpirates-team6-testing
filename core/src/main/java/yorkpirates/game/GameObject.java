@@ -2,19 +2,16 @@ package yorkpirates.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.utils.Array;
 
 public class GameObject {
     public float x, y, width, height, currentHealth;
     public int maxHealth;
 
-    String team;
-    Texture sprite;
-    Rectangle hitBox;
-    Animation<Texture> anim;
+    public String team;
+    public Texture texture;
+    public Rectangle hitBox;
 
     // ShaderProgram shader = new ShaderProgram(Gdx.files.internal("red.vsh"), Gdx.files.internal("red.fsh"));
 
@@ -28,8 +25,8 @@ public class GameObject {
      * @param height    The size of the object in the y-axis.
      * @param team      The team the object is on.
      */
-    GameObject(Array<Texture> frames, float fps, float x, float y, float width, float height, String team){
-        changeImage(frames,fps);
+    GameObject(Texture texture, float x, float y, float width, float height, String team) {
+        this.texture = texture;
         this.x = x;
         this.y = y;
         this.team = team;
@@ -43,9 +40,9 @@ public class GameObject {
      * @param frames    The animation frames, or a single sprite.
      * @param fps       The number of frames to be displayed per second.
      */
-    void changeImage(Array<Texture> frames, float fps){
-        sprite = frames.get(0);
-        anim = new Animation<>(fps==0?0:(1f/fps), frames);
+    void changeImage(Texture texture) {
+        this.texture.dispose();
+        this.texture = texture;
     }
 
     /**
@@ -111,6 +108,13 @@ public class GameObject {
      * @param elapsedTime   The current time the game has been running for.
      */
     public void draw(SpriteBatch batch, float elapsedTime){
-        batch.draw(anim.getKeyFrame(elapsedTime, true), x - width/2, y - height/2, width, height);
+        batch.draw(texture, x - width/2, y - height/2, width, height);
+    }
+
+    /**
+     * Called when the object needs to be disposed.
+     */
+    public void dispose(){
+        texture.dispose();
     }
 }

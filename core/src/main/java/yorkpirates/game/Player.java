@@ -41,9 +41,6 @@ public class Player extends GameObject {
     public Label weatherLabel;
     private WeatherType currentWeatherType= WeatherType.NONE;
 
-    //game screen
-    private GameScreen gameScreen;
-
     /**
      * Generates a generic object within the game with animated frame(s) and a hit-box.
      * @param frames    The animation frames, or a single sprite.
@@ -54,17 +51,15 @@ public class Player extends GameObject {
      * @param height    The size of the object in the y-axis.
      * @param team      The team the player is on.
      */
-    public Player(Array<Texture> frames, float fps, float x, float y, float width, float height, String team,Label weatherLabel, GameScreen gameScreen){
-        super(frames, fps, x, y, width, height, team);
+    public Player(Texture texture, float x, float y, float width, float height, String team, Label weatherLabel){
+        super(texture, x, y, width, height, team);
         lastMovementScore = 0;
         splashTime = 0;
         this.weatherLabel = weatherLabel;
-        this.gameScreen = gameScreen;
+
         // Generate health
-        Array<Texture> sprites = new Array<>();
-        sprites.add(new Texture("allyHealthBar.png"));
         setMaxHealth(HEALTH);
-        playerHealth = new HealthBar(this,sprites);
+        playerHealth = new HealthBar(this, new Texture("allyHealthBar.png"));
     }
 
     /**
@@ -177,7 +172,8 @@ public class Player extends GameObject {
         HUD.speedLbl.setText(SPEED + "mph");
         playerHealth.move(this.x, this.y + height/2 + 2f); // Healthbar moves with player
     }
-    public void checkForWeather(){
+    
+    public void checkForWeather(GameScreen gameScreen){
    
         WeatherType type = Weather.WhichWeather((int)this.x, (int)this.y, GameScreen.weathers);
         // HUD.UpdateWeatherLabel(this.x + " | " + this.y,weatherLabel);
@@ -247,15 +243,21 @@ public class Player extends GameObject {
      */
     @Override
     public void draw(SpriteBatch batch, float elapsedTime){
+
         // Generates the sprite
-        Texture frame = anim.getKeyFrame((currentHealth/maxHealth > 0.66f) ? 0 : ((currentHealth/maxHealth > 0.33f) ? 2 : 1), true);
         if(doBloodSplash){
             // batch.setShader(shader); // Set our grey-out shader to the batch
         } float rotation = (float) Math.toDegrees(Math.atan2(previousDirectionY, previousDirectionX));
 
         // Draws sprite and health-bar
-        batch.draw(frame, x - width/2, y - height/2, width/2, height/2, width, height, 1f, 1f, rotation, 0, 0, frame.getWidth(), frame.getHeight(), false, false);
+        batch.draw(texture, x - width/2, y - height/2, width/2, height/2, width, height, 1f, 1f, rotation, 0, 0, texture.getWidth(), texture.getHeight(), false, false);
         batch.setShader(null);
+    }
+
+    @Override
+    public void dispose() {
+        playerHealth.dispose();
+        super.dispose();
     }
 
     public void drawHealthBar(SpriteBatch batch){

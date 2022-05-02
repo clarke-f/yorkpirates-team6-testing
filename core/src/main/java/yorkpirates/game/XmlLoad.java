@@ -1,10 +1,7 @@
 package yorkpirates.game;
 import com.badlogic.gdx.Gdx;
 
-
 import java.io.IOException;
-import java.io.StringWriter;
-import java.security.KeyStore.LoadStoreParameter;
 import java.io.FileWriter;
 
 import com.badlogic.gdx.files.FileHandle;
@@ -12,14 +9,9 @@ import com.badlogic.gdx.utils.XmlReader;
 import com.badlogic.gdx.utils.XmlReader.Element;
 import com.badlogic.gdx.utils.XmlWriter;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g3d.particles.ParticleSorter.None;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Set;
-
-import com.badlogic.gdx.utils.Array;
 
 
 public class XmlLoad {
@@ -37,13 +29,13 @@ public class XmlLoad {
     }
 
     //returns a player object loaded from xml file
-    public static Player LoadPlayer (Array<Texture> sprites){
+    public static Player LoadPlayer (Texture texture){
         Element root = LoadFile();
         Element playerElem = root.getChildByName("player");
         Float playerX = Float.parseFloat(playerElem.get("x"));
         Float playerY = Float.parseFloat(playerElem.get("y"));
         Label playerWeather = HUD.AddWeatherLabel(playerElem.get("weather"));
-        return new Player(sprites, 2, playerX, playerY, 32, 16, "PLAYER",playerWeather);
+        return new Player(texture, playerX, playerY, 32, 16, "PLAYER", playerWeather);
     }
 
     //returns position of college with collegeName in form [x,y]

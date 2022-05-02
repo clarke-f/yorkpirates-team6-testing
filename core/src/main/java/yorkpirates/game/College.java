@@ -1,6 +1,5 @@
 package yorkpirates.game;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
@@ -22,15 +21,12 @@ public class College extends GameObject {
 
     private float splashTime;
     private long lastShotFired;
-    public final String collegeName;
-    public final Array<Texture> collegeImages;
-    public final float scale;
-    public final String initialBoatTexture;
-    private Array<Texture> boatTexture;
-    private Array<GameObject> boats;
-    private Array<Float> boatRotations;
-    private String teamName;
 
+    public final String collegeName;
+    public float scale;
+
+    public Texture boatTexture, capturedTexture;
+    public Array<GameObject> boats;
 
     private boolean doBloodSplash = false;
 
@@ -41,44 +37,31 @@ public class College extends GameObject {
      * @param name      The name of the college.
      * @param team      The team the college is on.
      */
-    public College(Array<Texture> sprites, float x, float y, float scale, String name, String team, Player player, String boatTexture){
-        super(sprites, 0, x, y, sprites.get(0).getWidth()*scale, sprites.get(0).getHeight()*scale, team);
+    public College(Texture texture, float x, float y, float scale, String name, String team, Player player, Texture boatTexture, Texture capturedTexture) {
+        super(texture, x, y, texture.getWidth()*scale, texture.getHeight()*scale, team);
 
-        this.boatTexture = new Array<>();
+        this.boatTexture = boatTexture;
+        this.capturedTexture = capturedTexture;
         this.boats = new Array<>();
-        this.boatRotations = new Array<>();
-        this.boatTexture.add(new Texture(Gdx.files.internal(boatTexture)));
-
-        this.teamName = name;
         this.scale = scale;
-        this.initialBoatTexture = boatTexture;
-
-        collegeImages = new Array<>();
-        for(int i = 0; i < sprites.size; i++) {
-            collegeImages.add(sprites.get(i));
-        }
 
         splashTime = 0;
         setMaxHealth(50);
         lastShotFired = 0;
         collegeName = name;
 
-        Array<Texture> healthBarSprite = new Array<>();
-        Array<Texture> indicatorSprite = new Array<>();
         if(Objects.equals(team, GameScreen.playerTeam)){
             if(Objects.equals(name, "Home")){
-                indicatorSprite.add(new Texture("homeArrow.png"));
+                direction = new Indicator(this, player, new Texture("homeArrow.png"));
             }else{
-                indicatorSprite.add(new Texture("allyArrow.png"));
+                direction = new Indicator(this, player, new Texture("allyArrow.png"));
             }
-            healthBarSprite.add(new Texture("allyHealthBar.png"));
+            collegeBar = new HealthBar(this, new Texture("allyHealthBar.png"));
 
         }else{
-            healthBarSprite.add(new Texture("enemyHealthBar.png"));
-            indicatorSprite.add(new Texture("questArrow.png"));
+            collegeBar = new HealthBar(this, new Texture("enemyHealthBar.png"));
+            direction = new Indicator(this, player, new Texture("questArrow.png"));
         }
-        collegeBar = new HealthBar(this,healthBarSprite);
-        direction = new Indicator(this,player,indicatorSprite);
     }
 
     /**
@@ -99,9 +82,7 @@ public class College extends GameObject {
                 int shootFrequency = 1000;
                 if (TimeUtils.timeSinceMillis(lastShotFired) > shootFrequency){
                     lastShotFired = TimeUtils.millis();
-                    Array<Texture> sprites = new Array<>();
-                    sprites.add(new Texture("tempProjectile.png"));
-                    screen.projectiles.add(new Projectile(sprites, 0, this, playerX, playerY, team));
+                    screen.projectiles.add(new Projectile(new Texture("tempProjectile.png"), this, playerX, playerY, team));
                 }
             }else if(Objects.equals(collegeName, "Home")){
                 boolean victory = true;
@@ -158,32 +139,23 @@ public class College extends GameObject {
                     }
                 }
 
-                Array<Texture> healthBarSprite = new Array<>();
-                Array<Texture> indicatorSprite = new Array<>();
-                healthBarSprite.add(new Texture("allyHealthBar.png"));
-                indicatorSprite.add(new Texture("allyArrow.png"));
-                boatTexture.clear();
-                boatTexture.add(screen.getPlayer().anim.getKeyFrame(0f));
+                changeImage(capturedTexture);
+                collegeBar.changeImage(new Texture("allyHealthBar.png"));
+                direction.changeImage(new Texture("allyArrow.png"));
 
-                Array<Texture> sprites = new Array<>();
-                sprites.add(collegeImages.get(1));
-                changeImage(sprites,0);
-
-                collegeBar.changeImage(healthBarSprite,0);
                 currentHealth = maxHealth;
                 collegeBar.resize(currentHealth);
                 College.capturedCount++;
-                direction.changeImage(indicatorSprite,0);
-                System.out.println(team);
+
                 //remove mortars
-                if(teamName == "Langwith"){
+                if(team == "Langwith"){
                     for(Weather w : GameScreen.weathers){
                         if(w.xpos == 1380){
                             GameScreen.weathers.remove(w);
                             break;
                         }
                     }
-                }else if(teamName == "Alcuin"){
+                }else if(team == "Alcuin"){
                     for(Weather w : GameScreen.weathers){
                         if(w.xpos == 1435){
                             GameScreen.weathers.remove(w);
@@ -207,17 +179,18 @@ public class College extends GameObject {
      */
     @Override
     public void draw(SpriteBatch batch, float elapsedTime){
-        if(doBloodSplash)   batch.setShader(null); // Set red shader to the batch
-        else                batch.setShader(null);
+        // if(doBloodSplash)   batch.setShader(null); // Set red shader to the batch
+        // else                batch.setShader(null);
 
         // Draw college
-        batch.draw(anim.getKeyFrame(elapsedTime, true), x - width/2, y - height/2, width, height);
-
-        // Draw boats before college so under
         batch.setShader(null);
+        batch.draw(texture, x - width/2, y - height/2, width, height);
+
+        // TODO something about boat rotations
+        // Draw boats before college so under
         for(int i = 0; i < boats.size; i++){
             GameObject boat = boats.get(i);
-            batch.draw(boatTexture.get(0), boat.x+boat.height, boat.y, 0,0, boat.width, boat.height, 1f, 1f, boatRotations.get(i), 0, 0, boatTexture.get(0).getWidth(), boatTexture.get(0).getHeight(), false, false);
+            batch.draw(boatTexture, boat.x+boat.height, boat.y, 0,0, boat.width, boat.height, 1f, 1f, 0, 0, 0, boatTexture.getWidth(), boatTexture.getHeight(), false, false);
         }
 
         collegeBar.draw(batch, 0);
@@ -230,8 +203,8 @@ public class College extends GameObject {
      * @param y The y position of the new boat relative to the college.
      */
     public void addBoat(float x, float y, float rotation){
-        boats.add(new GameObject(boatTexture, 0, x, y, 25, 12, team));
-        boatRotations.add(rotation);
+        boats.add(new GameObject(boatTexture, this.x+x, this.y+y, 25, 12, team));
+        // boatRotations.add(rotation);
     }
 
 }

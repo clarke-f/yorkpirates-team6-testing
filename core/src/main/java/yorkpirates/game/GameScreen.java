@@ -8,7 +8,6 @@ import java.util.TimerTask;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
@@ -19,15 +18,11 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-
-import java.io.IOException;
-import java.nio.channels.NonReadableChannelException;
 
 import static java.lang.Math.abs;
 import java.util.ArrayList;
@@ -120,8 +115,7 @@ public class GameScreen extends ScreenAdapter {
         Array<Texture> sprites = new Array<>();
 
         // Initialise player
-        sprites.add(new Texture("ship1.png"), new Texture("ship2.png"), new Texture("ship3.png"));
-        player = new Player(sprites, 2, 821, 489, 32, 16, playerTeam,l,this);
+        player = new Player(new Texture("ship1.png"), 821, 489, 32, 16, playerTeam,l);
         sprites.clear();
         followPos = new Vector3(player.x, player.y, 0f);
         game.camera.position.lerp(new Vector3(760, 510, 0f), 1f);
@@ -134,61 +128,49 @@ public class GameScreen extends ScreenAdapter {
         College.capturedCount = 0;
         colleges = new HashSet<>();
         College newCollege;
-        Array<Texture> collegeSprites = new Array<>();
 
         // Add alcuin
-        collegeSprites.add( new Texture("alcuin.png"),
-                            new Texture("alcuin_2.png"));
-        newCollege = new College(collegeSprites, 1492, 665, 0.5f,"Alcuin", enemyTeam, player, "alcuin_boat.png");
-        newCollege.addBoat(1540, 700, -60);
-        newCollege.addBoat(1380, 650, -150);
-        newCollege.addBoat(1580, 600, 0);
+        newCollege = new College(new Texture("alcuin.png"), 1492, 672, 0.4f, "Alcuin", enemyTeam, player, new Texture("alcuin_boat.png"), new Texture("alcuin_2.png"));
+        newCollege.addBoat(30, -20, -60);
+        newCollege.addBoat(-50, -40, -150);
+        newCollege.addBoat(-40, -70, 0);
         colleges.add(newCollege);
-        collegeSprites.clear();
 
         // Add derwent
-        collegeSprites.add( new Texture("derwent.png"),
-                            new Texture("derwent_2.png"));
-        newCollege = (new College(collegeSprites, 1815, 2105, 0.8f,"Derwent", enemyTeam, player, "derwent_boat.png"));
-        newCollege.addBoat(1920, 2400, 60);
-        newCollege.addBoat(1740, 1800, 70);
+        newCollege = (new College(new Texture("derwent.png"), 1815, 2105, 0.8f,"Derwent", enemyTeam, player, new Texture("derwent_boat.png"), new Texture("derwent_2.png")));
+        newCollege.addBoat(-70, -20, 60);
+        newCollege.addBoat(-70, -60, 70);
         colleges.add(newCollege);
-        collegeSprites.clear();
 
         // Add langwith
-        collegeSprites.add( new Texture("langwith.png"),
-                            new Texture("langwith_2.png"));
-        newCollege = (new College(collegeSprites, 1300, 1530, 1.0f,"Langwith", enemyTeam, player, "langwith_boat.png"));
-        newCollege.addBoat(1400, 1600, 60);
-        newCollege.addBoat(1450, 1580, -60);
-        newCollege.addBoat(1200, 1620, 230);
-        newCollege.addBoat(1230, 1400, 300);
-        newCollege.addBoat(1310, 1680, 135);
+        newCollege = (new College(new Texture("langwith.png"), 1300, 1530, 1.0f,"Langwith", enemyTeam, player, new Texture("langwith_boat.png"), new Texture("langwith_2.png")));
+        newCollege.addBoat(-150, -50, 60);
+        newCollege.addBoat(-120, -10, -60);
+        newCollege.addBoat(-10, -40, 230);
+        newCollege.addBoat(140, 10, 300);
+        newCollege.addBoat(200, 35, 135);
         colleges.add(newCollege);
-        collegeSprites.clear();
 
         // Add goodricke
-        collegeSprites.add( new Texture("goodricke.png"));
-        colleges.add(new College(collegeSprites, 700, 525, 0.7f,"Home",playerTeam,player, "ship1.png"));
+        colleges.add(new College(new Texture("goodricke.png"), 700, 525, 0.7f,"Home",playerTeam,player, new Texture("ship1.png"), null));
 
         // Initialise projectiles array to be used storing live projectiles
         projectiles = new HashSet<>();
 
         // Initialise shops
-        Array<Texture> shopImages = new Array<>();
+        Texture shopImage = new Texture("shop.png");
         shops = new Array<>();
         Shop newShop;
         shopOpened = false;
 
         // alcuin
-        shopImages.add(new Texture("shop.png"));
-        newShop = new Shop(shopImages, 1510, 620, 0.35f, false, "Alcuin");
+        newShop = new Shop(shopImage, 1510, 620, 0.35f, false, "Alcuin");
         shops.add(newShop);
         // derwent
-        newShop = new Shop(shopImages, 1790, 1999, 0.58f, false, "Derwent");
+        newShop = new Shop(shopImage, 1790, 1999, 0.58f, false, "Derwent");
         shops.add(newShop);
         //langwith
-        newShop  = new Shop(shopImages, 1500, 1522, 0.45f, false, "Langwith");
+        newShop  = new Shop(shopImage, 1500, 1522, 0.45f, false, "Langwith");
         shops.add(newShop);
 
         //Weather and obstacles
@@ -199,43 +181,37 @@ public class GameScreen extends ScreenAdapter {
         Timer t = new Timer();
         TimerTask tt = new TimerTask() {
             public void run(){
-                player.checkForWeather();
+                updateWeatherEvents();
             }
         };
         t.scheduleAtFixedRate(tt, 500, 700);
 
         //textures
         //barrels
-        Array<Texture> barrel_brown = new Array<Texture>();
-        barrel_brown.add(new Texture(Gdx.files.internal("barrel.png")));
-
-        Array<Texture> barrel_gold = new Array<Texture>();
-        barrel_gold.add(new Texture(Gdx.files.internal("barrel_gold.png")));
-
-        //icebergs
-        Array<Texture> iceberg = new Array<Texture>();
-        iceberg.add(new Texture(Gdx.files.internal("iceberg.png")));
+        Texture barrel_brown = new Texture("barrel.png");
+        Texture barrel_gold = new Texture("barrel_gold.png");
+        Texture iceberg = new Texture("iceberg.png");
 
         //objects
         //barrels 
-        Barrel b1 = new Barrel(barrel_brown, 0f, 821f, 608f, 20f, 20f, "ENEMY",40,BarrelType.BROWN);
-        Barrel b2 = new Barrel(barrel_gold, 0f,1086f, 787f, 20f, 20f, "ENEMY",0,BarrelType.GOLD);
-        Barrel b3 = new Barrel(barrel_brown, 0f,1299f, 605f, 20f, 20f, "ENEMY",40,BarrelType.BROWN);
-        Barrel b4 = new Barrel(barrel_brown, 0f,1619f, 524f, 20f, 20f, "ENEMY",40,BarrelType.BROWN);
-        Barrel b5 = new Barrel(barrel_gold, 0f,1936f, 801f, 20f, 20f, "ENEMY",0,BarrelType.GOLD);
-        Barrel b6 = new Barrel(barrel_brown, 0f,1700f, 1532f, 20f, 20f, "ENEMY",40,BarrelType.BROWN);
-        Barrel b7 = new Barrel(barrel_brown, 0f,1815f, 1222f, 10f, 10f, "ENEMY",40,BarrelType.BROWN);
-        Barrel b8 = new Barrel(barrel_brown, 0f,2215f, 1614f, 20f, 20f, "ENEMY",40,BarrelType.BROWN);
-        Barrel b9 = new Barrel(barrel_brown, 0f,2093f, 2038f, 20f, 20f, "ENEMY",40,BarrelType.BROWN);
-        Barrel b10 = new Barrel(barrel_brown, 0f,2137f, 1877f, 15f, 15f, "ENEMY",40,BarrelType.BROWN);
-        Barrel b11 = new Barrel(barrel_brown, 0f,1892f, 1543f, 20f, 20f, "ENEMY",40,BarrelType.BROWN);
+        Barrel b1 = new Barrel(barrel_brown, 821f, 608f, 20f, 20f, "ENEMY",40,BarrelType.BROWN);
+        Barrel b2 = new Barrel(barrel_gold,1086f, 787f, 20f, 20f, "ENEMY",0,BarrelType.GOLD);
+        Barrel b3 = new Barrel(barrel_brown,1299f, 605f, 20f, 20f, "ENEMY",40,BarrelType.BROWN);
+        Barrel b4 = new Barrel(barrel_brown,1619f, 524f, 20f, 20f, "ENEMY",40,BarrelType.BROWN);
+        Barrel b5 = new Barrel(barrel_gold,1936f, 801f, 20f, 20f, "ENEMY",0,BarrelType.GOLD);
+        Barrel b6 = new Barrel(barrel_brown,1700f, 1532f, 20f, 20f, "ENEMY",40,BarrelType.BROWN);
+        Barrel b7 = new Barrel(barrel_brown,1815f, 1222f, 10f, 10f, "ENEMY",40,BarrelType.BROWN);
+        Barrel b8 = new Barrel(barrel_brown,2215f, 1614f, 20f, 20f, "ENEMY",40,BarrelType.BROWN);
+        Barrel b9 = new Barrel(barrel_brown,2093f, 2038f, 20f, 20f, "ENEMY",40,BarrelType.BROWN);
+        Barrel b10 = new Barrel(barrel_brown,2137f, 1877f, 15f, 15f, "ENEMY",40,BarrelType.BROWN);
+        Barrel b11 = new Barrel(barrel_brown,1892f, 1543f, 20f, 20f, "ENEMY",40,BarrelType.BROWN);
         //icebergs
-        Obstacle ice1 = new Obstacle(iceberg,0, 950, 600, 50, 40, "ENEMY",100);
-        Obstacle ice2 = new Obstacle(iceberg,0, 1530, 500, 50, 40, "ENEMY",100);
-        Obstacle ice3 = new Obstacle(iceberg,0, 565, 1075, 50, 40, "ENEMY",100);
-        Obstacle ice4 = new Obstacle(iceberg,0, 1111, 1729, 50, 40, "ENEMY",100);
-        Obstacle ice5 = new Obstacle(iceberg,0, 656, 1840, 50, 40, "ENEMY",100);
-        Obstacle ice6 = new Obstacle(iceberg,0, 1770, 1658, 50, 40, "ENEMY",100);
+        Obstacle ice1 = new Obstacle(iceberg, 950, 600, 50, 40, "ENEMY",100);
+        Obstacle ice2 = new Obstacle(iceberg, 1530, 500, 50, 40, "ENEMY",100);
+        Obstacle ice3 = new Obstacle(iceberg, 565, 1075, 50, 40, "ENEMY",100);
+        Obstacle ice4 = new Obstacle(iceberg, 1111, 1729, 50, 40, "ENEMY",100);
+        Obstacle ice5 = new Obstacle(iceberg, 656, 1840, 50, 40, "ENEMY",100);
+        Obstacle ice6 = new Obstacle(iceberg, 1770, 1658, 50, 40, "ENEMY",100);
         
         obstacles.add(b1);
         obstacles.add(b2);
@@ -347,6 +323,11 @@ public class GameScreen extends ScreenAdapter {
         weathers.add(mortar);
         weathers.add(mortar2);
     }
+
+    public void updateWeatherEvents() {
+        player.checkForWeather(this);
+    }
+
     /**
      * Is called once every frame. Runs update(), renders the game and then the HUD.
      * @param delta The time passed since the previously rendered frame.
@@ -436,10 +417,8 @@ public class GameScreen extends ScreenAdapter {
             if(canFire){
                 Vector3 mouseVector = new Vector3(Gdx.input.getX(), Gdx.input.getY(),0);
                 Vector3 mousePos = game.camera.unproject(mouseVector);
-    
-                Array<Texture> sprites = new Array<>();
-                sprites.add(new Texture("tempProjectile.png"));
-                projectiles.add(new Projectile(sprites, 0, player, mousePos.x, mousePos.y, playerTeam));
+
+                projectiles.add(new Projectile(new Texture("tempProjectile.png"), player, mousePos.x, mousePos.y, playerTeam));
                 gameHUD.endTutorial();
                 canFire = false;
                 Thread t = new Thread(){
@@ -456,9 +435,7 @@ public class GameScreen extends ScreenAdapter {
         }
         if(Gdx.input.isKeyJustPressed(Input.Keys.LEFT)){
             if(canFire){
-                Array<Texture> sprites = new Array<>();
-                sprites.add(new Texture("tempProjectile.png"));
-                projectiles.add(new Projectile(sprites, 0, player, 0, player.y, playerTeam));
+                projectiles.add(new Projectile(new Texture("tempProjectile.png"), player, 0, player.y, playerTeam));
                 gameHUD.endTutorial();
                 canFire = false;
                 Thread t = new Thread(){
@@ -477,7 +454,7 @@ public class GameScreen extends ScreenAdapter {
             if(canFire){
                 Array<Texture> sprites = new Array<>();
                 sprites.add(new Texture("tempProjectile.png"));
-                projectiles.add(new Projectile(sprites, 0, player, Gdx.graphics.getWidth(), player.y, playerTeam));
+                projectiles.add(new Projectile(new Texture("tempProjectile.png"), player, Gdx.graphics.getWidth(), player.y, playerTeam));
                 gameHUD.endTutorial();
                 canFire = false;
                 Thread t = new Thread(){
@@ -495,7 +472,7 @@ public class GameScreen extends ScreenAdapter {
             if(canFire){
                 Array<Texture> sprites = new Array<>();
                 sprites.add(new Texture("tempProjectile.png"));
-                projectiles.add(new Projectile(sprites, 0, player, player.x, Gdx.graphics.getHeight(), playerTeam));
+                projectiles.add(new Projectile(new Texture("tempProjectile.png"), player, player.x, Gdx.graphics.getHeight(), playerTeam));
                 gameHUD.endTutorial();
                 canFire = false;
                 Thread t = new Thread(){
@@ -513,7 +490,7 @@ public class GameScreen extends ScreenAdapter {
             if(canFire){
                 Array<Texture> sprites = new Array<>();
                 sprites.add(new Texture("tempProjectile.png"));
-                projectiles.add(new Projectile(sprites, 0, player, player.x, 0, playerTeam));
+                projectiles.add(new Projectile(new Texture("tempProjectile.png"), player, player.x, 0, playerTeam));
                 gameHUD.endTutorial();
                 canFire = false;
                 Thread t = new Thread(){
@@ -589,6 +566,38 @@ public class GameScreen extends ScreenAdapter {
             loadSave();
         }
     }
+
+    //saves current state (currently only supports colleges and player)
+    public void saveState (Player player) {
+        lastSave = elapsedTime;
+        XmlLoad.Save(player, colleges);
+    }
+
+    //loads current save by creating new objects
+    public void loadSave(){
+
+        //creates new player object with information from xml file
+        lastLoad = elapsedTime;
+        player = XmlLoad.LoadPlayer(new Texture("ship1.png"));
+        followPos = new Vector3(player.x, player.y, 0f);
+
+        //creates new college objects with information from xml file
+        Set<College> collegesToReplace = new HashSet<>();
+        for (College toLoadCollege : colleges){
+            String toLoadCollegeName = toLoadCollege.collegeName;
+            String newteam = XmlLoad.LoadCollegeTeam(toLoadCollegeName);
+            Float[] newpos = XmlLoad.LoadCollegePosition(toLoadCollegeName);
+            College addCollege = new College(toLoadCollege.texture, newpos[0], newpos[1], toLoadCollege.scale, toLoadCollege.collegeName, newteam, player, toLoadCollege.boatTexture, toLoadCollege.capturedTexture);
+            //adds boats to college using xml file (currently kinda broken)
+            for (Float[] newBoat : XmlLoad.LoadCollegeBoats(toLoadCollegeName)) {
+                System.out.println(String.valueOf(newBoat[0]));
+                addCollege.addBoat(newBoat[0], newBoat[1], 0);
+            }
+            collegesToReplace.add(addCollege);
+        }
+        colleges = collegesToReplace;
+    }
+
 
     /**
      * Called to switch from the current screen to the pause screen, while retaining the current screen's information.
@@ -678,39 +687,6 @@ public class GameScreen extends ScreenAdapter {
      * @return  The viewport.
      */
     public FitViewport getViewport() { return viewport; }
-
-    //saves current state (currently only supports colleges and player)
-    public void saveState (Player player) {
-        lastSave = elapsedTime;
-        XmlLoad.Save(player, colleges);
-    }
-
-    //loads current save by creating new objects
-    public void loadSave(){
-
-        //creates new player object with information from xml file
-        Array<Texture> sprites = new Array<>();
-        lastLoad = elapsedTime;
-        sprites.add(new Texture("ship1.png"), new Texture("ship2.png"), new Texture("ship3.png"));
-        player = XmlLoad.LoadPlayer(sprites);
-        followPos = new Vector3(player.x, player.y, 0f);
-
-        //creates new college objects with information from xml file
-        Set<College> collegesToReplace = new HashSet<>();
-        for (College toLoadCollege : colleges){
-            String toLoadCollegeName = toLoadCollege.collegeName;
-            String newteam = XmlLoad.LoadCollegeTeam(toLoadCollegeName);
-            Float[] newpos = XmlLoad.LoadCollegePosition(toLoadCollegeName);
-            College addCollege = new College(toLoadCollege.collegeImages, newpos[0], newpos[1], toLoadCollege.scale, toLoadCollege.collegeName, newteam, player, toLoadCollege.initialBoatTexture);
-            //adds boats to college using xml file (currently kinda broken)
-            for (Float[] newBoat : XmlLoad.LoadCollegeBoats(toLoadCollegeName)) {
-                System.out.println(String.valueOf(newBoat[0]));
-                addCollege.addBoat(newBoat[0], newBoat[1], 0);
-            }
-            collegesToReplace.add(addCollege);
-        }
-        colleges = collegesToReplace;
-    }
 
     /**
      * Disposes of disposables when game finishes execution.

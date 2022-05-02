@@ -1,8 +1,5 @@
 package yorkpirates.game;
 
-import java.io.IOError;
-import java.io.IOException;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.ScreenAdapter;

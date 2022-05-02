@@ -1,7 +1,6 @@
 package yorkpirates.game;
 
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.utils.Array;
 
 import java.util.Objects;
 
@@ -29,8 +28,8 @@ public class Projectile extends GameObject{
      * @param goal_y    The y coordinate within the map the object is moving towards.
      * @param team      The team of the projectile.
      */
-    public Projectile(Array<Texture> frames, float fps, GameObject origin, float goal_x, float goal_y, String team) {
-        super(frames, fps, origin.x, origin.y, 5f,5f,team);
+    public Projectile(Texture texture, GameObject origin, float goal_x, float goal_y, String team) {
+        super(texture, origin.x, origin.y, 5f,5f,team);
         this.origin = origin;
         if(origin instanceof Player){
             Player p = (Player)origin;

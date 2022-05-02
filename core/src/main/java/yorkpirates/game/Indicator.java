@@ -3,7 +3,6 @@ package yorkpirates.game;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
 import static java.lang.Math.*;
 
 public class Indicator extends GameObject{
@@ -14,9 +13,8 @@ public class Indicator extends GameObject{
     private Vector2 gradient;
     private boolean visible;
 
-    public Indicator(College college, Player player, Array<Texture> frames) {
-        super(frames, 0, player.x, player.y, frames.get(0).getWidth()/50f, frames.get(0).getHeight()/50f, college.team);
-
+    public Indicator(College college, Player player, Texture texture) {
+        super(texture, player.x, player.y, texture.getWidth()/50f, texture.getHeight()/50f, college.team);
         this.player = player;
         this.college = college;
         gradient = updateGradient();
@@ -34,7 +32,7 @@ public class Indicator extends GameObject{
         // Draw the indicator if visible
         if(visible){
             float rotation = (float) Math.toDegrees(Math.atan2(gradient.y,gradient.x));
-            batch.draw(sprite, x - width/2, y - height/2, width/2, height/2, width, height, 1f, 1f, rotation, 0, 0, sprite.getWidth(), sprite.getHeight(), false, false);
+            batch.draw(texture, x - width/2, y - height/2, width/2, height/2, width, height, 1f, 1f, rotation, 0, 0, texture.getWidth(), texture.getHeight(), false, false);
         }
     }
 
