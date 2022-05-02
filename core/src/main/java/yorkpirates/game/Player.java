@@ -15,12 +15,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 public class Player extends GameObject {
 
     // Player constants
-    public float SPEED = 70f;
-    public float playerProjectileDamage = 20;
+    public float SPEED = 70f; // Player movement speed.
+    public float DAMAGE = 20f;
+    public float ARMOUR = 0;
     public float projectileShootCooldown = 0.1f;
+  
     private static final int POINT_FREQUENCY = 1000; // How often the player gains points by moving.
     private static final float CAMERA_SLACK = 0.1f; // What percentage of the screen the player can move in before the camera follows.
-     // Player movement speed.
+    
+  
     private static final int HEALTH = 200;
 
     // Movement calculation values
@@ -38,6 +41,9 @@ public class Player extends GameObject {
     private Label weatherLabel;
     private WeatherType currentWeatherType= WeatherType.NONE;
 
+    //game screen
+    private GameScreen gameScreen;
+
     /**
      * Generates a generic object within the game with animated frame(s) and a hit-box.
      * @param frames    The animation frames, or a single sprite.
@@ -48,11 +54,12 @@ public class Player extends GameObject {
      * @param height    The size of the object in the y-axis.
      * @param team      The team the player is on.
      */
-    public Player(Array<Texture> frames, float fps, float x, float y, float width, float height, String team,Label weatherLabel){
+    public Player(Array<Texture> frames, float fps, float x, float y, float width, float height, String team,Label weatherLabel, GameScreen gameScreen){
         super(frames, fps, x, y, width, height, team);
         lastMovementScore = 0;
         splashTime = 0;
         this.weatherLabel = weatherLabel;
+        this.gameScreen = gameScreen;
         // Generate health
         Array<Texture> sprites = new Array<>();
         sprites.add(new Texture("allyHealthBar.png"));
@@ -169,30 +176,27 @@ public class Player extends GameObject {
         playerHealth.move(this.x, this.y + height/2 + 2f); // Healthbar moves with player
     }
     public void checkForWeather(){
-        // System.out.println("checking..");
-
+    
         WeatherType type = Weather.WhichWeather((int)this.x, (int)this.y, GameScreen.weathers);
         // HUD.UpdateWeatherLabel(this.x + " | " + this.y,weatherLabel);
         //only check if its different weather
         if(currentWeatherType != type){
             Weather.ResetPlayerDisadvantage(this);
             if(type == WeatherType.NONE){
-                //this is to test the position
-                
+
                 HUD.UpdateWeatherLabel("",weatherLabel);
-                
             }else{
                 //update weather label to show user which weather event they're in 
                 HUD.UpdateWeatherLabel(Weather.getWeatherLabelText(type),weatherLabel);
                 //need to disadvantage the player in some way
                 if(type == WeatherType.RAIN){
-                    Weather.DisadvantagePlayer(this,type,GameScreen.rains);
+                    Weather.DisadvantagePlayer(gameScreen,this,type,GameScreen.rains);
                 }else if (type == WeatherType.SNOW){
-                    Weather.DisadvantagePlayer(this,type,GameScreen.snows);
+                    Weather.DisadvantagePlayer(gameScreen,this,type,GameScreen.snows);
                 }else if (type == WeatherType.STORM){
-                    Weather.DisadvantagePlayer(this,type,GameScreen.storms);
-                }else if(type == WeatherType.JAMESFURY){
-                    Weather.DisadvantagePlayer(this, type, GameScreen.jamesa);
+                    Weather.DisadvantagePlayer(gameScreen,this,type,GameScreen.storms);
+                }else if(type == WeatherType.VOLCANO){
+                    Weather.DisadvantagePlayer(gameScreen,this, type, GameScreen.volcanos);
                 }
             }
         }
@@ -208,13 +212,19 @@ public class Player extends GameObject {
     @Override
     public void takeDamage(GameScreen screen, float damage, String projectileTeam){
         timeLastHit = TimeUtils.millis();
-        currentHealth -= damage;
+        currentHealth -= damage + ARMOUR;
         doBloodSplash = true;
 
         // Health-bar reduction
         playerHealth.resize(currentHealth);
         if(currentHealth <= 0){
-           screen.gameEnd(false);
+            //this is to run it on the main thread as to not crash the whole thing
+            Gdx.app.postRunnable(new Runnable() {
+                public void run () {
+                    screen.gameEnd(false);
+                }
+            });
+           
         }
     }
 
@@ -252,5 +262,17 @@ public class Player extends GameObject {
 
     public float getDistance() {
         return distance;
+    }
+
+    public String getArmourString(){
+        return Float.toString(ARMOUR);
+    }
+    
+    public String getDamageString(){
+        return Float.toString(DAMAGE);
+    }
+
+    public String getSpeedString(){
+        return Float.toString(SPEED);
     }
 }
