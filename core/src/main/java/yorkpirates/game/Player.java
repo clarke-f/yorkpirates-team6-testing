@@ -136,13 +136,15 @@ public class Player extends GameObject {
                     if(b.type == BarrelType.BROWN){
                         takeDamage(screen, b.damage, "ENEMY");
                     }else{
-                        int randMoney = (int)Math.floor(6 - 2 + 1) + 2;
+                        int randMoney = (int)Math.floor(Math.random() * (6 - 2 + 1) + 2);
                         screen.loot.Add(randMoney);
                     }
                     it.remove();
-                }else{
+                }else{ 
+                    
                     takeDamage(screen, o.damage, "ENEMY");
-                    move(-500, -500);
+                    move(1000 * -previousDirectionX, 1000 * -previousDirectionY);
+                    
                 }
             }
         }
@@ -176,7 +178,7 @@ public class Player extends GameObject {
         playerHealth.move(this.x, this.y + height/2 + 2f); // Healthbar moves with player
     }
     public void checkForWeather(){
-    
+   
         WeatherType type = Weather.WhichWeather((int)this.x, (int)this.y, GameScreen.weathers);
         // HUD.UpdateWeatherLabel(this.x + " | " + this.y,weatherLabel);
         //only check if its different weather
@@ -195,8 +197,8 @@ public class Player extends GameObject {
                     Weather.DisadvantagePlayer(gameScreen,this,type,GameScreen.snows);
                 }else if (type == WeatherType.STORM){
                     Weather.DisadvantagePlayer(gameScreen,this,type,GameScreen.storms);
-                }else if(type == WeatherType.VOLCANO){
-                    Weather.DisadvantagePlayer(gameScreen,this, type, GameScreen.volcanos);
+                }else if(type == WeatherType.MORTAR){
+                    Weather.DisadvantagePlayer(gameScreen,this, type, GameScreen.mortars);
                 }
             }
         }
