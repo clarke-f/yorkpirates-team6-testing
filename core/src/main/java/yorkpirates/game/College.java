@@ -26,6 +26,7 @@ public class College extends GameObject {
     private Array<Texture> boatTexture;
     private Array<GameObject> boats;
     private Array<Float> boatRotations;
+    private String teamName;
 
     private boolean doBloodSplash = false;
 
@@ -43,6 +44,7 @@ public class College extends GameObject {
         this.boats = new Array<>();
         this.boatRotations = new Array<>();
         this.boatTexture.add(new Texture(Gdx.files.internal(boatTexture)));
+        this.teamName = name;
         collegeImages = new Array<>();
         for(int i = 0; i < sprites.size; i++) {
             collegeImages.add(sprites.get(i));
@@ -164,7 +166,28 @@ public class College extends GameObject {
                 collegeBar.resize(currentHealth);
                 College.capturedCount++;
                 direction.changeImage(indicatorSprite,0);
+                System.out.println(team);
+                //remove mortars
+                if(teamName == "Langwith"){
+                    for(Weather w : GameScreen.weathers){
+                        if(w.xpos == 1380){
+                            GameScreen.weathers.remove(w);
+                            break;
+                        }
+                    }
+                }else if(teamName == "Alcuin"){
+                    for(Weather w : GameScreen.weathers){
+                        if(w.xpos == 1435){
+                            GameScreen.weathers.remove(w);
+                            break;
+                        }
+                    }
+                }
+
+                //set to players team
                 team = GameScreen.playerTeam;
+
+                
             }
         }
     }

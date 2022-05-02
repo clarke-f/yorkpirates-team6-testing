@@ -22,9 +22,7 @@ public class Weather {
         this.xoff = xoff;
         this.yoff = yoff;
         this.weatherType = weatherType;
-        
-        
-        
+    
     }
 
     public static String getWeatherLabelText(WeatherType weatherType){
@@ -36,8 +34,8 @@ public class Weather {
             ret = "";
         }else if(weatherType == WeatherType.STORM){
             ret = "";
-        }else if(weatherType == WeatherType.VOLCANO){
-            ret = "Volcano is erupting...";
+        }else if(weatherType == WeatherType.MORTAR){
+            ret = "A MORTAR has been spotted...";
         }else if(weatherType == WeatherType.NONE){
             ret = "";
         }
@@ -67,7 +65,7 @@ public class Weather {
         }else if(weatherType == WeatherType.STORM){
             disSpeed = 20;
             player.projectileShootCooldown = 0.8f;
-        }else if (weatherType == WeatherType.VOLCANO){
+        }else if (weatherType == WeatherType.MORTAR){
             disSpeed = 30;
             // player.playerProjectileDamage = 200f;
             t =  new Timer();
