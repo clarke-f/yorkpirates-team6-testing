@@ -49,7 +49,7 @@ public class GameScreen extends ScreenAdapter {
 
     // Shops
     public Array<Shop> shops;
-    public boolean shopOpened;
+    public boolean shopOpened, mortarable = false;
 
     // Sound
     public Music music;
@@ -83,10 +83,11 @@ public class GameScreen extends ScreenAdapter {
     //Timers
     private long lastShot = 0;
     private long lastWeather = 0;
+    private long lastMortar = 0;
     
 
-    public static ArrayList<Actor> rains,snows,storms,mortars;
-    public static ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
+    public ArrayList<Actor> rains,snows,storms,mortars;
+    public ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
     
     
 
@@ -178,6 +179,7 @@ public class GameScreen extends ScreenAdapter {
 
         lastShot = TimeUtils.millis();
         lastWeather = TimeUtils.millis();
+        lastMortar = TimeUtils.millis();
 
         //Weather and obstacles
 
@@ -393,6 +395,8 @@ public class GameScreen extends ScreenAdapter {
      */
     private void update() {
 
+        float delta = Gdx.graphics.getDeltaTime();
+
         if (TimeUtils.timeSinceMillis(lastWeather) >= 1000) {
             lastWeather = TimeUtils.millis();
             updateWeatherEvents();
@@ -439,12 +443,33 @@ public class GameScreen extends ScreenAdapter {
             }
         }
 
-          
         Iterator<College> cIterator = colleges.iterator();
 
         while (cIterator.hasNext()) {
             College c = cIterator.next();
             c.update(this);
+        }
+
+        //Weather updates
+        for (Actor a : snows) {
+            a.act(delta);
+        }
+
+        for (Actor a : rains) {
+            a.act(delta);
+        }
+
+        for (Actor a : storms) {
+            a.act(delta);
+        }
+
+        if (mortarable) {
+            if (TimeUtils.timeSinceMillis(lastMortar) >= 2000) { 
+                player.takeDamage(this, 20, "ENEMY");
+                lastMortar = TimeUtils.millis();
+            }
+        } else {
+            lastMortar = TimeUtils.millis();
         }
 
         // Camera calculations based on player movement
