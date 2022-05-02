@@ -8,6 +8,7 @@ import java.util.TimerTask;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
@@ -21,16 +22,16 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
-
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 
-
+import static java.lang.Math.abs;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+
 
 public class GameScreen extends ScreenAdapter {
     // Team name constants
@@ -49,6 +50,10 @@ public class GameScreen extends ScreenAdapter {
     // Colleges
     public Set<College> colleges;
     public Set<Projectile> projectiles;
+
+    // Shops
+    public Array<Shop> shops;
+    public boolean shopOpened;
 
     // Sound
     public Music music;
@@ -130,7 +135,7 @@ public class GameScreen extends ScreenAdapter {
         // Add alcuin
         collegeSprites.add( new Texture("alcuin.png"),
                             new Texture("alcuin_2.png"));
-        newCollege = new College(collegeSprites, 1492, 665, 0.5f,"Alcuin", enemyTeam, player, "alcuin_boat.png");
+        newCollege = new College(collegeSprites, 1492, 672, 0.4f,"Alcuin", enemyTeam, player, "alcuin_boat.png");
         newCollege.addBoat(30, -20, -60);
         newCollege.addBoat(-50, -40, -150);
         newCollege.addBoat(-40, -70, 0);
@@ -164,6 +169,23 @@ public class GameScreen extends ScreenAdapter {
 
         // Initialise projectiles array to be used storing live projectiles
         projectiles = new HashSet<>();
+
+        // Initialise shops
+        Array<Texture> shopImages = new Array<>();
+        shops = new Array<>();
+        Shop newShop;
+        shopOpened = false;
+
+        // alcuin
+        shopImages.add(new Texture("shop.png"));
+        newShop = new Shop(shopImages, 1510, 620, 0.35f, false, "Alcuin");
+        shops.add(newShop);
+        // derwent
+        newShop = new Shop(shopImages, 1790, 1999, 0.58f, false, "Derwent");
+        shops.add(newShop);
+        //langwith
+        newShop  = new Shop(shopImages, 1500, 1522, 0.45f, false, "Langwith");
+        shops.add(newShop);
 
         //Weather and obstacles
 
@@ -222,6 +244,7 @@ public class GameScreen extends ScreenAdapter {
         generateRain();
         generateSnow();
         generateStorm();
+
     }
     private void generateRain(){
         Texture rain = new Texture(Gdx.files.internal("rain.png"));
@@ -341,10 +364,19 @@ public class GameScreen extends ScreenAdapter {
         for (College c : colleges) {
             c.draw(game.batch, 0);
         }
+        
+        // Draw Shops
+        for (int i = 0; i < shops.size; i++){
+            if (shops.get(i).activated){
+                shops.get(i).draw(game.batch, 0);
+            }
+        }
+
+        // Draw Obstacles
         for(Obstacle o : obstacles){
             o.draw(game.batch, 0);
         }
-        
+
         game.batch.end();
 
         // Draw HUD
@@ -418,6 +450,34 @@ public class GameScreen extends ScreenAdapter {
         if(followPlayer) followPos = new Vector3(player.x, player.y, 0);
         if(Math.abs(game.camera.position.x - followPos.x) > 1f || Math.abs(game.camera.position.y - followPos.y) > 1f){
             game.camera.position.slerp(followPos, 0.1f);
+        }
+
+        // Call to open shop window
+        for(int i=0; i < shops.size; i++){
+            if(Gdx.input.isKeyJustPressed(Input.Keys.E)
+            && (abs(shops.get(i).x - player.x)) < (Gdx.graphics.getWidth()/15f)
+            && (abs(shops.get(i).y - player.y)) < (Gdx.graphics.getHeight()/10f)
+            && shops.get(i).activated){
+                if (shopOpened){
+                    shopOpened = false;
+                }
+                else{
+                    shopOpened = true;
+                }
+            }
+        }
+
+        // Player upgrades
+        if (shopOpened){
+            if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)){
+                shops.get(0).upgrade(player, loot, "damage");
+            }
+            if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)){
+                shops.get(0).upgrade(player, loot, "speed");
+            }
+            if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)){
+                shops.get(0).upgrade(player, loot, "armour");
+            }
         }
 
         // Call to pause the game

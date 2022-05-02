@@ -17,6 +17,7 @@ public class Projectile extends GameObject{
     private final float dy;
     private final float projectileSpeed; // Projectile movement speed.
 
+
     private static float projectileDamage = 20f; // Projectile damage.
 
     /**
