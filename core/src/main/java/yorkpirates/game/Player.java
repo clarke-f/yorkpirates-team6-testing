@@ -183,7 +183,7 @@ public class Player extends GameObject {
             if(type == WeatherType.NONE){
 
                 HUD.UpdateWeatherLabel("",weatherLabel);
-            }else{
+            } else {
                 //update weather label to show user which weather event they're in 
                 HUD.UpdateWeatherLabel(Weather.getWeatherLabelText(type),weatherLabel);
                 //need to disadvantage the player in some way
