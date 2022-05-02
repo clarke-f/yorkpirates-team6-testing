@@ -156,6 +156,7 @@ public class HUD {
         // Create shop table 
         shop = new Table();
         shop.setFillParent(true);
+        shop.setBackground(tracker.getBackground());
         welcome = new Label("", skin);
         shop.add(welcome).center().padBottom(50);
         shop.row();

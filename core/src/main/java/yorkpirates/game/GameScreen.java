@@ -377,8 +377,8 @@ public class GameScreen extends ScreenAdapter {
             player.drawHealthBar(game.batch);
             player.draw(game.batch, elapsedTime);
             HUDBatch.begin();
-            Vector3 pos = game.camera.project(new Vector3(player.x, player.y, 0f));
-            game.font.draw(HUDBatch, playerName, pos.x, pos.y + 170f, 1f, Align.center, true);
+            //Vector3 pos = game.camera.project(new Vector3(player.x, player.y, 0f));
+            //game.font.draw(HUDBatch, playerName, pos.x, pos.y + 170f, 1f, Align.center, true);
             HUDBatch.end();
         }
 
