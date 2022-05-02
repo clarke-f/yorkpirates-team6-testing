@@ -21,10 +21,12 @@ public class College extends GameObject {
 
     private float splashTime;
     private long lastShotFired;
-    private final String collegeName;
 
-    private Texture boatTexture, capturedTexture;
-    private Array<GameObject> boats;
+    public final String collegeName;
+    public float scale;
+
+    public Texture boatTexture, capturedTexture;
+    public Array<GameObject> boats;
 
     private boolean doBloodSplash = false;
 
@@ -41,6 +43,7 @@ public class College extends GameObject {
         this.boatTexture = boatTexture;
         this.capturedTexture = capturedTexture;
         this.boats = new Array<>();
+        this.scale = scale;
 
         splashTime = 0;
         setMaxHealth(50);
@@ -143,7 +146,28 @@ public class College extends GameObject {
                 currentHealth = maxHealth;
                 collegeBar.resize(currentHealth);
                 College.capturedCount++;
+
+                //remove mortars
+                if(team == "Langwith"){
+                    for(Weather w : GameScreen.weathers){
+                        if(w.xpos == 1380){
+                            GameScreen.weathers.remove(w);
+                            break;
+                        }
+                    }
+                }else if(team == "Alcuin"){
+                    for(Weather w : GameScreen.weathers){
+                        if(w.xpos == 1435){
+                            GameScreen.weathers.remove(w);
+                            break;
+                        }
+                    }
+                }
+
+                //set to players team
                 team = GameScreen.playerTeam;
+
+                
             }
         }
     }
@@ -182,4 +206,5 @@ public class College extends GameObject {
         boats.add(new GameObject(boatTexture, this.x+x, this.y+y, 25, 12, team));
         // boatRotations.add(rotation);
     }
+
 }

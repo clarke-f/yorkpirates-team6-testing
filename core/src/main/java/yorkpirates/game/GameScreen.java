@@ -18,13 +18,11 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-
 
 import static java.lang.Math.abs;
 import java.util.ArrayList;
@@ -61,7 +59,7 @@ public class GameScreen extends ScreenAdapter {
     private final YorkPirates game;
 
     // Player
-    private final Player player;
+    private Player player;
     private String playerName;
     private Vector3 followPos;
     private boolean followPlayer = false;
@@ -81,8 +79,10 @@ public class GameScreen extends ScreenAdapter {
     private boolean isPaused = false;
     private boolean canFire = true;
     private float lastPause = 0;
+    private float lastSave = 0;
+    private float lastLoad = 0;
 
-    public static ArrayList<Actor> rains,snows,storms,volcanos;
+    public static ArrayList<Actor> rains,snows,storms,mortars;
     public static ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
     
     
@@ -91,7 +91,7 @@ public class GameScreen extends ScreenAdapter {
      * Initialises the main game screen, as well as relevant entities and data.
      * @param game  Passes in the base game class for reference.
      */
-    public GameScreen(YorkPirates game){
+    public GameScreen(YorkPirates game) {
         this.game = game;
         playerName = "Player";
         // Initialise points and loot managers
@@ -115,7 +115,7 @@ public class GameScreen extends ScreenAdapter {
         Array<Texture> sprites = new Array<>();
 
         // Initialise player
-        player = new Player(new Texture("ship1.png"), 821, 489, 32, 16, playerTeam,l,this);
+        player = new Player(new Texture("ship1.png"), 821, 489, 32, 16, playerTeam,l);
         sprites.clear();
         followPos = new Vector3(player.x, player.y, 0f);
         game.camera.position.lerp(new Vector3(760, 510, 0f), 1f);
@@ -181,7 +181,7 @@ public class GameScreen extends ScreenAdapter {
         Timer t = new Timer();
         TimerTask tt = new TimerTask() {
             public void run(){
-                player.checkForWeather();
+                updateWeatherEvents();
             }
         };
         t.scheduleAtFixedRate(tt, 500, 700);
@@ -195,17 +195,23 @@ public class GameScreen extends ScreenAdapter {
         //objects
         //barrels 
         Barrel b1 = new Barrel(barrel_brown, 821f, 608f, 20f, 20f, "ENEMY",40,BarrelType.BROWN);
-        Barrel b2 = new Barrel(barrel_gold, 1086f, 787f, 20f, 20f, "ENEMY",0,BarrelType.GOLD);
-        Barrel b3 = new Barrel(barrel_brown, 1299f, 605f, 20f, 20f, "ENEMY",40,BarrelType.BROWN);
-        Barrel b4 = new Barrel(barrel_brown, 1619f, 524f, 20f, 20f, "ENEMY",40,BarrelType.BROWN);
-        Barrel b5 = new Barrel(barrel_gold, 1936f, 801f, 20f, 20f, "ENEMY",0,BarrelType.GOLD);
-        Barrel b6 = new Barrel(barrel_brown, 1700f, 1532f, 20f, 20f, "ENEMY",40,BarrelType.BROWN);
-        Barrel b7 = new Barrel(barrel_brown, 546f, 1131f, 20f, 20f, "ENEMY",40,BarrelType.BROWN);
+        Barrel b2 = new Barrel(barrel_gold,1086f, 787f, 20f, 20f, "ENEMY",0,BarrelType.GOLD);
+        Barrel b3 = new Barrel(barrel_brown,1299f, 605f, 20f, 20f, "ENEMY",40,BarrelType.BROWN);
+        Barrel b4 = new Barrel(barrel_brown,1619f, 524f, 20f, 20f, "ENEMY",40,BarrelType.BROWN);
+        Barrel b5 = new Barrel(barrel_gold,1936f, 801f, 20f, 20f, "ENEMY",0,BarrelType.GOLD);
+        Barrel b6 = new Barrel(barrel_brown,1700f, 1532f, 20f, 20f, "ENEMY",40,BarrelType.BROWN);
+        Barrel b7 = new Barrel(barrel_brown,1815f, 1222f, 10f, 10f, "ENEMY",40,BarrelType.BROWN);
+        Barrel b8 = new Barrel(barrel_brown,2215f, 1614f, 20f, 20f, "ENEMY",40,BarrelType.BROWN);
+        Barrel b9 = new Barrel(barrel_brown,2093f, 2038f, 20f, 20f, "ENEMY",40,BarrelType.BROWN);
+        Barrel b10 = new Barrel(barrel_brown,2137f, 1877f, 15f, 15f, "ENEMY",40,BarrelType.BROWN);
+        Barrel b11 = new Barrel(barrel_brown,1892f, 1543f, 20f, 20f, "ENEMY",40,BarrelType.BROWN);
         //icebergs
         Obstacle ice1 = new Obstacle(iceberg, 950, 600, 50, 40, "ENEMY",100);
         Obstacle ice2 = new Obstacle(iceberg, 1530, 500, 50, 40, "ENEMY",100);
         Obstacle ice3 = new Obstacle(iceberg, 565, 1075, 50, 40, "ENEMY",100);
         Obstacle ice4 = new Obstacle(iceberg, 1111, 1729, 50, 40, "ENEMY",100);
+        Obstacle ice5 = new Obstacle(iceberg, 656, 1840, 50, 40, "ENEMY",100);
+        Obstacle ice6 = new Obstacle(iceberg, 1770, 1658, 50, 40, "ENEMY",100);
         
         obstacles.add(b1);
         obstacles.add(b2);
@@ -214,11 +220,17 @@ public class GameScreen extends ScreenAdapter {
         obstacles.add(b5);
         obstacles.add(b6);
         obstacles.add(b7);
-        
+        obstacles.add(b8);
+        obstacles.add(b9);
+        obstacles.add(b10);
+        obstacles.add(b11);
+
         obstacles.add(ice1);
         obstacles.add(ice2);
         obstacles.add(ice3);
         obstacles.add(ice4);
+        obstacles.add(ice5);
+        obstacles.add(ice6);
 
         //generate the weather animations
         generateRain();
@@ -233,7 +245,7 @@ public class GameScreen extends ScreenAdapter {
 
         for(int i =0;i<numOfDrops;i++){
             int x = (int)Math.floor(Math.random()*(((Gdx.graphics.getWidth()/2)+ 200) - ((Gdx.graphics.getWidth()/2)-200)+1) + (Gdx.graphics.getWidth()/2)-200);
-            int y = (int)Math.floor(Math.random()*(((Gdx.graphics.getHeight()/2)+200) - ((Gdx.graphics.getHeight()/2)-200)+1) + (Gdx.graphics.getHeight()/2)-200);
+            int y = (int)Math.floor(Math.random()*(((Gdx.graphics.getHeight()/2)+200) - ((Gdx.graphics.getHeight()/2)-200)+1) + (Gdx.graphics.getHeight()/2)-100);
             int size = (int)Math.floor(Math.random()*(80-40+1)+40);
 
             Rain rrain = new Rain(x, y, size,size,rain,0.6f);
@@ -286,25 +298,36 @@ public class GameScreen extends ScreenAdapter {
         rains = new ArrayList<Actor>();
         snows = new ArrayList<Actor>();
         storms = new ArrayList<Actor>();
-        volcanos = new ArrayList<Actor>((Arrays.asList(new RectangleColour(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), new Color(255, 0, 0, 0.5f)))));
+        mortars = new ArrayList<Actor>((Arrays.asList(new RectangleColour(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), new Color(255, 0, 0, 0.5f)))));
 
         //postion of weathers on map
         Weather rain =  new Weather(820, 980, 1000,100, WeatherType.RAIN);
         Weather rain2 =  new Weather(1770, 2300, 150,150, WeatherType.RAIN);
         Weather snow =  new Weather(1190, 911, 100,100, WeatherType.SNOW);
+        Weather snow2 =  new Weather(940,1341, 100,100, WeatherType.SNOW);
+        Weather snow3 =  new Weather(2072,2145, 100,100, WeatherType.SNOW);
         Weather storm =  new Weather(1700, 678, 100,100, WeatherType.STORM);
         Weather storm2 =  new Weather(670, 700, 150,150, WeatherType.STORM);
         Weather storm3 =  new Weather(400,1000, 200,150, WeatherType.STORM);
-        Weather volcano =  new Weather(1380, 1770, 200,200, WeatherType.VOLCANO);
-
+        Weather mortar =  new Weather(1380, 1770, 180,150, WeatherType.MORTAR);
+        Weather mortar2 = new Weather(1435,741,180,150,WeatherType.MORTAR);
+        
         weathers.add(rain);
         weathers.add(rain2);
         weathers.add(snow);
+        weathers.add(snow2);
+        weathers.add(snow3);
         weathers.add(storm);
         weathers.add(storm2);
         weathers.add(storm3);
-        weathers.add(volcano);
+        weathers.add(mortar);
+        weathers.add(mortar2);
     }
+
+    public void updateWeatherEvents() {
+        player.checkForWeather(this);
+    }
+
     /**
      * Is called once every frame. Runs update(), renders the game and then the HUD.
      * @param delta The time passed since the previously rendered frame.
@@ -335,8 +358,8 @@ public class GameScreen extends ScreenAdapter {
             player.drawHealthBar(game.batch);
             player.draw(game.batch, elapsedTime);
             HUDBatch.begin();
-            Vector3 pos = game.camera.project(new Vector3(player.x, player.y, 0f));
-            game.font.draw(HUDBatch, playerName, pos.x, pos.y + 170f, 1f, Align.center, true);
+            //Vector3 pos = game.camera.project(new Vector3(player.x, player.y, 0f));
+            //game.font.draw(HUDBatch, playerName, pos.x, pos.y + 170f, 1f, Align.center, true);
             HUDBatch.end();
         }
 
@@ -532,7 +555,49 @@ public class GameScreen extends ScreenAdapter {
         if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) && elapsedTime - lastPause > 0.1f){
             gamePause();
         }
+
+        //call to save the game
+        if(Gdx.input.isKeyJustPressed(Input.Keys.F8) && elapsedTime - lastSave > 0.1f){
+            saveState(player);
+        }
+
+        //call to load the game
+        if(Gdx.input.isKeyJustPressed(Input.Keys.F7) && elapsedTime - lastLoad > 0.1f){
+            loadSave();
+        }
     }
+
+    //saves current state (currently only supports colleges and player)
+    public void saveState (Player player) {
+        lastSave = elapsedTime;
+        XmlLoad.Save(player, colleges);
+    }
+
+    //loads current save by creating new objects
+    public void loadSave(){
+
+        //creates new player object with information from xml file
+        lastLoad = elapsedTime;
+        player = XmlLoad.LoadPlayer(new Texture("ship1.png"));
+        followPos = new Vector3(player.x, player.y, 0f);
+
+        //creates new college objects with information from xml file
+        Set<College> collegesToReplace = new HashSet<>();
+        for (College toLoadCollege : colleges){
+            String toLoadCollegeName = toLoadCollege.collegeName;
+            String newteam = XmlLoad.LoadCollegeTeam(toLoadCollegeName);
+            Float[] newpos = XmlLoad.LoadCollegePosition(toLoadCollegeName);
+            College addCollege = new College(toLoadCollege.texture, newpos[0], newpos[1], toLoadCollege.scale, toLoadCollege.collegeName, newteam, player, toLoadCollege.boatTexture, toLoadCollege.capturedTexture);
+            //adds boats to college using xml file (currently kinda broken)
+            for (Float[] newBoat : XmlLoad.LoadCollegeBoats(toLoadCollegeName)) {
+                System.out.println(String.valueOf(newBoat[0]));
+                addCollege.addBoat(newBoat[0], newBoat[1], 0);
+            }
+            collegesToReplace.add(addCollege);
+        }
+        colleges = collegesToReplace;
+    }
+
 
     /**
      * Called to switch from the current screen to the pause screen, while retaining the current screen's information.
