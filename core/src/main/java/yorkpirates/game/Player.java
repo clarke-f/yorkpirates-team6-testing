@@ -122,7 +122,7 @@ public class Player extends GameObject {
         }
 
         //collide with obstacle
-        for(Iterator<Obstacle> it = GameScreen.obstacles.iterator();it.hasNext();){
+        for(Iterator<Obstacle> it = screen.obstacles.iterator(); it.hasNext();){
             Obstacle o = it.next();
             if(overlaps(o.hitBox)){
                 
@@ -188,13 +188,13 @@ public class Player extends GameObject {
                 HUD.UpdateWeatherLabel(Weather.getWeatherLabelText(type),weatherLabel);
                 //need to disadvantage the player in some way
                 if(type == WeatherType.RAIN){
-                    Weather.DisadvantagePlayer(gameScreen,this,type,GameScreen.rains);
+                    Weather.DisadvantagePlayer(gameScreen,this,type,gameScreen.rains);
                 }else if (type == WeatherType.SNOW){
-                    Weather.DisadvantagePlayer(gameScreen,this,type,GameScreen.snows);
+                    Weather.DisadvantagePlayer(gameScreen,this,type,gameScreen.snows);
                 }else if (type == WeatherType.STORM){
-                    Weather.DisadvantagePlayer(gameScreen,this,type,GameScreen.storms);
+                    Weather.DisadvantagePlayer(gameScreen,this,type,gameScreen.storms);
                 }else if(type == WeatherType.MORTAR){
-                    Weather.DisadvantagePlayer(gameScreen,this, type, GameScreen.mortars);
+                    Weather.DisadvantagePlayer(gameScreen,this,type,gameScreen.mortars);
                 }
             }
         }

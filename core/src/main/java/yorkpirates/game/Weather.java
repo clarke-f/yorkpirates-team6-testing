@@ -2,7 +2,6 @@ package yorkpirates.game;
 
 import java.util.ArrayList;
 import java.util.Timer;
-import java.util.TimerTask;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Array;
@@ -51,10 +50,11 @@ public class Weather {
         return WeatherType.NONE;
     }
    
-    public static void DisadvantagePlayer(GameScreen gameScreen, Player player, WeatherType weatherType,ArrayList<Actor> disList ){
+    public static void DisadvantagePlayer(GameScreen gameScreen, Player player, WeatherType weatherType,ArrayList<Actor> disList) {
         //set players attributes so they have a disadvantage
         //we also need to draw some rectangles to represent rain/snow so they're
         //visibility is impeded.
+        gameScreen.mortarable = false;
         
         if(weatherType == WeatherType.RAIN){
             disSpeed = 5;
@@ -68,16 +68,19 @@ public class Weather {
         }else if (weatherType == WeatherType.MORTAR){
             disSpeed = 30;
             // player.playerProjectileDamage = 200f;
-            t =  new Timer();
-            TimerTask tt = new TimerTask(){
-                public void run(){
-                    try{
-                        Thread.sleep(1000);
-                    }catch(InterruptedException e){}
-                    player.takeDamage(gameScreen, 20, "ENEMY");
-                }
-            };
-            t.scheduleAtFixedRate(tt, 0, 2000);
+            // t =  new Timer();
+            // TimerTask tt = new TimerTask(){
+            //     public void run(){
+            //         try{
+            //             Thread.sleep(1000);
+            //         }catch(InterruptedException e){}
+            //         player.takeDamage(gameScreen, 20, "ENEMY");
+            //     }
+            // };
+            // t.scheduleAtFixedRate(tt, 0, 2000);
+
+            //Long timer for player damage via mortar
+            gameScreen.mortarable = true;
         
             player.projectileShootCooldown = 0.9f;
         }
