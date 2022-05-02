@@ -14,19 +14,33 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Scaling;
 
+import static java.lang.Math.abs;
+
 public class HUD {
 
     // Stage
-    public static Stage stage;
+    public Stage stage;
+    private final Table mainTable;
     public static int screenWidth = 0, screenHeight = 0;
+
     // Tutorial
     private final Table tutorial;
     private final Cell<Image> tutorialImg;
     private final Label tutorialLabel;
     private boolean tutorialComplete = false;
     private boolean canEndGame = false;
+
+    // Shop
+    private final Table shop;
+    private final Label welcome;
+    private final Label armour;
+    private final Label damage;
+    private final Label speed;
+    private final Label openShop;
+    
     //skin for most objects
     private static Skin skin;
+
     // Player counters
     private final Label score;
     private final Label loot;
@@ -60,10 +74,10 @@ public class HUD {
         // Generate stage and table
         stage = new Stage(screen.getViewport());
         Gdx.input.setInputProcessor(stage);
-        Table table = new Table();
-        table.setFillParent(true);
-        table.setTouchable(Touchable.enabled);
-        if(YorkPirates.DEBUG_ON) table.setDebug(true);
+        mainTable = new Table();
+        mainTable.setFillParent(true);
+        mainTable.setTouchable(Touchable.enabled);
+        if(YorkPirates.DEBUG_ON) mainTable.setDebug(true);
 
         // Create menu button
         ImageButton menuButton = new ImageButton(skin, "Menu");
@@ -134,27 +148,52 @@ public class HUD {
         tutorial.add(tutorialLabel);
         if(YorkPirates.DEBUG_ON) tutorial.setDebug(true);
 
+        // Create shop prompt
+        openShop = new Label("", skin);
+        openShop.setBounds(10, 35, 16, 9);
+
+
+        // Create shop table 
+        shop = new Table();
+        shop.setFillParent(true);
+        welcome = new Label("", skin);
+        shop.add(welcome).center().padBottom(50);
+        shop.row();
+        damage = new Label("", skin);
+        shop.add(damage).center().padBottom(25);
+        shop.row();
+        speed = new Label("", skin);
+        shop.add(speed).center();
+        shop.row();
+        armour = new Label("", skin);
+        shop.add(armour).center().padTop(25);
+
         // Start main table
 
         // Add menu button to table
-        table.row();
-        table.add(menuButton).size(150).left().top().pad(25);
+        mainTable.row();
+        mainTable.add(menuButton).size(150).left().top().pad(25);
 
         // Add tutorial to table
-        table.row();
-        table.add(tutorial.pad(100f));
+        mainTable.row();
+        mainTable.add(tutorial.pad(100f));
 
         // Add tracker to table
-        table.add().expand();
-        table.add(tracker);
-
+        mainTable.add().expand();
+        mainTable.add(tracker);
+      
         //spedometer
         speedLbl = new Label("0mph", skin);
         speedLbl .setPosition(Gdx.graphics.getWidth() - 300, Gdx.graphics.getHeight() - 100);
         speedLbl.setFontScale(0.8f);
         stage.addActor(speedLbl);
-        
-        stage.addActor(table);
+
+        // Add actors to the stage
+        stage.addActor(mainTable);
+        stage.addActor(shop);
+        stage.addActor(openShop);
+
+        shop.setVisible(false);
     }
     public static Label AddWeatherLabel(String text){
         // Add table to the stage
@@ -186,6 +225,16 @@ public class HUD {
         // Update the score and loot
         score.setText(screen.points.GetString());
         loot.setText(screen.loot.GetString());
+        
+        // Update shop values
+        Player player = screen.getPlayer();
+        String currentArmour = String.format("Press 3 to upgrade armour - Currently have %s armour", player.getArmourString());
+        String currentDamage = String.format("Press 1 to upgrade damage - You currently do %s damage", player.getDamageString());
+        String currentSpeed = String.format("Press 2 to upgrade speed - You currently move at a speed of %s", player.getSpeedString());
+        welcome.setText("Welcome to the shop, you have " + screen.loot.GetString() + " gold to spend");
+        damage.setText(currentDamage);
+        armour.setText(currentArmour);
+        speed.setText(currentSpeed);
 
         // Calculate which part of the tutorial to show
         if(screen.getPlayer().getDistance() < 2){
@@ -212,6 +261,41 @@ public class HUD {
             // Tutorial complete
             tutorial.setVisible(false);
         }
+
+        // Prompt the player to open the shop
+        for(int i=0; i < screen.shops.size; i++){
+            if((abs(screen.shops.get(i).x - player.x)) < (Gdx.graphics.getWidth()/15f)
+            && (abs(screen.shops.get(i).y - player.y)) < (Gdx.graphics.getHeight()/10f)
+            && screen.shops.get(i).activated){
+                openShop.setText("Press e to open the shop");
+            }
+        }
+
+        // Check if the player is outside any shop range
+        for(int i=0; i < screen.shops.size; i++){
+            if((abs(screen.shops.get(i).x - player.x)) < (Gdx.graphics.getWidth()/15f)
+            && (abs(screen.shops.get(i).y - player.y)) < (Gdx.graphics.getHeight()/10f)){
+                if(screen.shops.get(i).activated){
+                    break;
+                }
+            }    
+            else if(i == screen.shops.size-1){
+                openShop.setText("");
+                shop.setVisible(false);
+                screen.shopOpened = false;
+            }
+        }
+        // Check if the player has opened or closed the shop
+        if (screen.shopOpened){
+            mainTable.setVisible(false);
+            shop.setVisible(true);
+            openShop.setText("Press e to close the shop");
+        }
+        else{
+            mainTable.setVisible(true);
+            shop.setVisible(false);
+        }
+
 
         // Decide on and then display main player goal
         if(College.capturedCount >= screen.colleges.size() - 1){
