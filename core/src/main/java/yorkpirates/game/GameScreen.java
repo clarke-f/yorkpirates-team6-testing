@@ -410,7 +410,7 @@ public class GameScreen extends ScreenAdapter {
         // }
 
         // Check for projectile creation, then call projectile update
-        /* if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)){
+        if(Gdx.input.isButtonPressed(Input.Buttons.LEFT)){
             if(canFire){
                 Vector3 mouseVector = new Vector3(Gdx.input.getX(), Gdx.input.getY(),0);
                 Vector3 mousePos = game.camera.unproject(mouseVector);
@@ -431,7 +431,7 @@ public class GameScreen extends ScreenAdapter {
                 t.start();
             }
            
-        } */
+        }
         if(Gdx.input.isKeyJustPressed(Input.Keys.LEFT)){
             if(canFire){
                 Array<Texture> sprites = new Array<>();
