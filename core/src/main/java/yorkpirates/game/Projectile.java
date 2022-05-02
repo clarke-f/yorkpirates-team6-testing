@@ -17,6 +17,7 @@ public class Projectile extends GameObject{
     private final float dy;
     private final float projectileSpeed; // Projectile movement speed.
 
+
     private static float projectileDamage = 20f; // Projectile damage.
 
     /**
@@ -33,7 +34,7 @@ public class Projectile extends GameObject{
         this.origin = origin;
         if(origin instanceof Player){
             Player p = (Player)origin;
-            projectileDamage = p.playerProjectileDamage;
+            projectileDamage = p.DAMAGE;
         }
         
         // Speed calculations

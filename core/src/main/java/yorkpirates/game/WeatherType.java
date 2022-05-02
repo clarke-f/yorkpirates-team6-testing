@@ -4,6 +4,6 @@ public enum WeatherType{
     RAIN,
     STORM,
     SNOW,
-    JAMESFURY,
+    VOLCANO,
     NONE
 }
