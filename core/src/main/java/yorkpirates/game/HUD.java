@@ -19,7 +19,7 @@ import static java.lang.Math.abs;
 public class HUD {
 
     // Stage
-    public Stage stage;
+    public static Stage stage;
     private final Table mainTable;
     public static int screenWidth = 0, screenHeight = 0;
 
