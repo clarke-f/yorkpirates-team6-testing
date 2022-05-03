@@ -46,7 +46,7 @@ public class College extends GameObject {
         this.scale = scale;
 
         splashTime = 0;
-        setMaxHealth(50);
+        setMaxHealth(200);
         lastShotFired = 0;
         collegeName = name;
 
