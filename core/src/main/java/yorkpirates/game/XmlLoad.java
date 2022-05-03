@@ -62,14 +62,14 @@ public class XmlLoad {
         Element colleges = root.getChildByName("colleges");
         Element thisCollege = colleges.getChildByName(collegeName);
         Element thisCollegeBoats = thisCollege.getChildByName("boats");
-        if (thisCollegeBoats != null){
+        if (thisCollegeBoats != null) {
             int toRetLength = 0;
-            for (Element boat : thisCollegeBoats.getChildrenByName("boat")){
+            for (Element boat : thisCollegeBoats.getChildrenByName("boat")) {
                 toRetLength = toRetLength + 1;
             }
             Float[][] toReturn = new Float[toRetLength][2];
             int loop = 0;
-            for (Element boat : thisCollegeBoats.getChildrenByName("boat")){
+            for (Element boat : thisCollegeBoats.getChildrenByName("boat")) {
                 System.out.println(String.valueOf(loop));
                 toReturn[loop][0] = Float.parseFloat(boat.get("x"));
                 System.out.println(String.valueOf(toReturn[loop][0]));

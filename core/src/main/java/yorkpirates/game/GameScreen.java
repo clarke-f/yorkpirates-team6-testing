@@ -308,8 +308,8 @@ public class GameScreen extends ScreenAdapter {
         Weather storm =  new Weather(1700, 678, 100,100, WeatherType.STORM);
         Weather storm2 =  new Weather(670, 700, 150,150, WeatherType.STORM);
         Weather storm3 =  new Weather(400,1000, 200,150, WeatherType.STORM);
-        Weather mortar =  new Weather(1380, 1770, 180,150, WeatherType.MORTAR);
-        Weather mortar2 = new Weather(1435,741,180,150,WeatherType.MORTAR);
+        // Weather mortar =  new Weather(1380, 1770, 180,150, WeatherType.MORTAR);
+        // Weather mortar2 = new Weather(1435,741,180,150,WeatherType.MORTAR);
         
         weathers.add(rain);
         weathers.add(rain2);
@@ -319,8 +319,8 @@ public class GameScreen extends ScreenAdapter {
         weathers.add(storm);
         weathers.add(storm2);
         weathers.add(storm3);
-        weathers.add(mortar);
-        weathers.add(mortar2);
+        // weathers.add(mortar);
+        // weathers.add(mortar2);
     }
 
     public void updateWeatherEvents() {
@@ -430,6 +430,8 @@ public class GameScreen extends ScreenAdapter {
                 gameHUD.endTutorial();
             }
         }
+
+        System.out.println(Math.atan2(player.x - 500, player.y - 500));
 
         // Call updates for all relevant objects
         player.update(this, game.camera);

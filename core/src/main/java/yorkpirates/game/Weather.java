@@ -65,24 +65,24 @@ public class Weather {
         }else if(weatherType == WeatherType.STORM){
             disSpeed = 20;
             player.projectileShootCooldown = 0.8f;
-        }else if (weatherType == WeatherType.MORTAR){
-            disSpeed = 30;
-            // player.playerProjectileDamage = 200f;
-            // t =  new Timer();
-            // TimerTask tt = new TimerTask(){
-            //     public void run(){
-            //         try{
-            //             Thread.sleep(1000);
-            //         }catch(InterruptedException e){}
-            //         player.takeDamage(gameScreen, 20, "ENEMY");
-            //     }
-            // };
-            // t.scheduleAtFixedRate(tt, 0, 2000);
+        // }else if (weatherType == WeatherType.MORTAR){
+        //     disSpeed = 30;
+        //     // player.playerProjectileDamage = 200f;
+        //     // t =  new Timer();
+        //     // TimerTask tt = new TimerTask(){
+        //     //     public void run(){
+        //     //         try{
+        //     //             Thread.sleep(1000);
+        //     //         }catch(InterruptedException e){}
+        //     //         player.takeDamage(gameScreen, 20, "ENEMY");
+        //     //     }
+        //     // };
+        //     // t.scheduleAtFixedRate(tt, 0, 2000);
 
-            //Long timer for player damage via mortar
-            gameScreen.mortarable = true;
+        //     //Long timer for player damage via mortar
+        //     gameScreen.mortarable = true;
         
-            player.projectileShootCooldown = 0.9f;
+        //     player.projectileShootCooldown = 0.9f;
         }
         player.SPEED-=disSpeed;
         for(Actor r : disList){
